@@ -1,0 +1,3659 @@
+  METHOD /iwbep/if_mgw_appl_srv_runtime~create_deep_entity.
+    TRY.
+        TYPES:BEGIN OF lty_rrf_item,
+                company_code                   TYPE  bukrs,
+                rrf_no                         TYPE  /kgo/fi_req_no,
+                requesting_mf                  TYPE  /kgo/fi_mf_gf,
+                coupa_requisition_number       TYPE  /kgo/fi_creq_no,
+                global_cc                      TYPE  kostl,
+                landx                          TYPE  landx,
+                ltext                          TYPE  ltext,
+                process_grp                    TYPE  /kgo/fi_process_grp,
+                MEMBER_FIRM	                   TYPE	/KGO/FI_MEMBER_FIRM,
+                CC_SHORT_DESC	                 TYPE	/KGO/FI_CC_DESC,
+                contact_p_cop                  TYPE  /kgo/fi_mf_con_id,
+                cop_email_id                   TYPE  /kgo/fi_mf_con_email,
+                details_description_of_service TYPE  /kgo/fi_d_desc,
+                serv_now_cop                   TYPE  /kgo/fi_serv_no,
+                serv_now_status                TYPE  /kgo/fi_serv_status,
+                conf_yn                        TYPE  /kgo/fi_conf_yn,
+                cop_att                        TYPE  /kgo/fi_conf_yn,
+                loa_cop                        TYPE  /kgo/fi_conf_yn,
+                loa_contact                    TYPE  /kgo/fi_loa_contact,
+                loa_email                      TYPE  /kgo/fi_loa_email,
+                adl_loa_contact                TYPE  /kgo/fi_loa_contact,
+                adl_loa_email                  TYPE  /kgo/fi_loa_email,
+                atten_brf                      TYPE  /kgo/fi_atten_brf,
+                atten_brf_email                TYPE  /kgo/fi_atten_brf_email,
+                mf_ap_email                    TYPE  /kgo/fi_atten_brf_email,
+                gf_name                        TYPE  /kgo/fi_atten_brf,
+                gf_email                       TYPE  /kgo/fi_atten_brf_email,
+                entity_name                    TYPE  /kgo/fi_entity_name,
+                entity_address                 TYPE  /kgo/fi_ent_addr,
+                vat_id                         TYPE  stcd1,
+                addl_bill_info                 TYPE  string,
+                mf_cost_center                 TYPE  /kgo/fi_proj_code,
+                wh_tax                         TYPE  /kgo/fi_yn,
+                perc_y                         TYPE  /kgo/fi_percy,
+                amnt_rechrg_po                 TYPE   wrbtr,
+                loa_yn                         TYPE  /kgo/fi_yn,
+                snow_no_loa                    TYPE  /kgo/fi_serv_no,
+                supplier                       TYPE  bu_nameor1,
+                third_party_agreement          TYPE  string,
+                third_party                    TYPE  bu_nameor1,
+                legal_name                     TYPE  bu_nameor1,
+                loa_desc                       TYPE  /kgo/fi_addl_bill,
+                att_yn                         TYPE  /kgo/fi_att_yn,
+                brf_initiate                   TYPE  /kgo/fi_yn,
+                rrf_status                     TYPE  /kgo/fi_rrfl_status,
+                sap_code_mf                    TYPE  /kgo/fi_mf_gf,
+                global_gl                      TYPE  saknr,
+                amt1                           TYPE  wrbtr,
+                amt2                           TYPE  wrbtr,
+                nature_of_service              TYPE  /kgo/fi_nos,
+                last_date_srv                  TYPE  string,
+                brief_description_of_services  TYPE  /kgo/fi_brf_desc,
+                location_of_the_services_req   TYPE  land1,
+                urn                            TYPE  /kgo/fi_urn,
+                delete_ind                     TYPE  /kgo/fi_yn,
+                contarct_start_date            TYPE  string,
+                contarct_end_date              TYPE  string,
+                cop_initiate                   TYPE /kgo/fi_yn,
+                loa_initiate                   TYPE /kgo/fi_yn,
+                loa_enable                     TYPE /kgo/fi_yn,
+                serv_loa_status                TYPE /kgo/fi_serv_status,
+                cop_sctask_link                TYPE string,
+                loa_sctask_link                TYPE string,
+                new_entity                     TYPE /kgo/fi_yn,
+                mf_form                        TYPE char10,
+                descript                       TYPE settext,
+                total_comm_amount              TYPE wrf_ppw_value_max,
+                invoice_type                   TYPE /kgo/fi_inv_type,
+                GF_LINE_DESC                   TYPE /kgo/fi_GF_LINE_DESC,
+                cop_yes_date                   TYPE string,
+                BILLING_SYNTAX                 TYPE /KGO/FI_BILL_SYNTAX, "Added by ABHISHEKB on 26/3/2021
+                Long_text                      TYPE string,  "Added by ABHISHEKB on 23/02/2021 for Long Text
+                short_description              TYPE /KGO/FI_D_DESC, "Added by ABHISHEKB on 26/3/2021
+*Start of changes for GP fields of dashboard || smondal || 17-May-2021
+                GP_FISCAL_YEAR                 TYPE GJAHR,
+                COMMITMENT_TYPE	               TYPE	/KGO/FI_COMMIT_TYPE,
+                BASELINE_COMMITMENT_AMMOUNT	   TYPE	WRBTR,
+                ADDITIONAL_DEMAND	             TYPE STRING,
+                CONSUMPTION_BASED_AMOUNT       TYPE STRING,
+                YEAR2_COMMITMENT_AMOUNT	       TYPE	STRING,"WRBTR,"Changed for SCTASK1976009 || smondal || 30-06-2021
+                YEAR3_COMMITMENT_AMOUNT	       TYPE	STRING,"WRBTR,"Changed for SCTASK1976009 || smondal || 30-06-2021
+                YEAR4_COMMITMENT_AMOUNT	       TYPE	STRING,"WRBTR,"Changed for SCTASK1976009 || smondal || 30-06-2021
+                YEAR5_COMMITMENT_AMOUNT	       TYPE	STRING,"WRBTR,"Changed for SCTASK1976009 || smondal || 30-06-2021
+                YEAR6_COMMITMENT_AMOUNT	       TYPE	STRING,"WRBTR,"Changed for SCTASK1976009 || smondal || 30-06-2021
+                FINANCIAL_COMMENT	             TYPE STRING,
+                DESCRIPTION_OF_RECHARGE	       TYPE STRING,
+*End of changes for GP fields of dashboard || smondal || 17-May-2021
+              END OF lty_rrf_item,
+
+              BEGIN OF lty_rrf_header_po,
+                company_code      TYPE  bukrs,
+                rrf_no            TYPE  /kgo/fi_req_no,
+                coupa_contract_no TYPE /kgo/fi_creq_no,
+                po_year           TYPE /kgo/fi_po_year,
+                po_start_date     TYPE string,
+                po_end_date       TYPE string,
+                po_no             TYPE /kgo/fi_ar_po_id,
+                msg               TYPE string,
+              END OF lty_rrf_header_po,
+
+              BEGIN OF lty_rrf_line_po,
+                company_code      TYPE  bukrs,
+                rrf_no            TYPE  /kgo/fi_req_no,
+                coupa_contract_no TYPE /kgo/fi_creq_no,
+                requesting_mf     TYPE  /kgo/fi_mf_gf,
+                global_cc         TYPE  kostl,
+                process_grp       TYPE  /kgo/fi_process_grp,
+                MEMBER_FIRM       TYPE  /KGO/FI_MEMBER_FIRM,
+                CC_SHORT_DESC     TYPE  /KGO/FI_CC_DESC,
+                po_year           TYPE /kgo/fi_po_year,
+                po_start_date     TYPE string,
+                po_end_date       TYPE string,
+                serial_no         TYPE /kgo/fi_comm_no,"+Added for serial no in comme section on 30.03.2021
+                po_amount         TYPE wrbtr,
+                srv_chrg          TYPE wrbtr,
+                brf_no            TYPE /kgo/fi_req_no,
+                flag              TYPE boole_d,
+                msg               TYPE string,
+                outline_text      TYPE char100,
+              END OF lty_rrf_line_po,
+
+*Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+              BEGIN of lty_rrf_answer,
+                COMPANY_CODE  TYPE  BUKRS,
+                RRF_NO        TYPE  /KGO/FI_REQ_NO,
+                REQUESTING_MF TYPE  /KGO/FI_MF_GF,
+                GLOBAL_CC     TYPE  KOSTL,
+                PROCESS_GRP   TYPE  /KGO/FI_PROCESS_GRP,
+                MEMBER_FIRM   TYPE  /KGO/FI_MEMBER_FIRM,
+                CC_SHORT_DESC TYPE  /KGO/FI_CC_DESC,
+                TRANSACTION_TYPE TYPE /KGO/FI_TRAN_TYPE,
+                QUESTION      TYPE  /KGO/FI_QUESTION,
+                BRF_NO        TYPE  /KGO/FI_BRF_NO,
+                ANSWER        TYPE  /KGO/FI_ANSWER,
+                ANSWER_DESC   TYPE /KGO/FI_ANSWER_DESC,
+                LINE_TYPE     TYPE /KGO/FI_LINE_TYPE,
+                USER_ID       TYPE  UNAME,
+                RECORD_DATE   TYPE  DATUM,
+                RECORD_TIME	 TYPE	UZEIT,
+                INTERNAL_EXTERNAL TYPE /KGO/FI_QUES_TYPE,
+              END OF lty_rrf_answer,
+*End of changes for questionnaire || SMONDAL || 3-Mar-2021
+
+              BEGIN OF lty_rrf_header_deep,
+                company_code             TYPE  bukrs,
+                rrf_no                   TYPE  /kgo/fi_req_no,
+                coupa_requisition_number TYPE  /kgo/fi_creq_no,
+                coupa_requisition_date   TYPE  string,
+                coupa_req_created_by     TYPE  /kgo/fi_creq_name,
+                contarct_start_date      TYPE  string,
+                contarct_end_date        TYPE  string,
+                contract_term            TYPE  /kgo/fi_contract_term,
+                rrf_desc                 TYPE  /kgo/fi_rrf_desc,
+                po_number                TYPE  /kgo/fi_ar_po_id,
+                total_po_amount          TYPE  wrbtr,
+                currency                 TYPE  waers,
+                po_description           TYPE  /kgo/fi_ar_po_desc,
+                global_cost_centre       TYPE  kostl,
+                gl_account               TYPE  hkont,
+                eng_manager_partner_name TYPE  /kgo/fi_ar_eng_pm,
+                rrf_status               TYPE  /kgo/fi_rrf_status,
+                vendor                   TYPE  lifnr,
+                vendor_name              TYPE  bu_nameor1,
+                contrl_name              TYPE  emnam,
+                contrl_email             TYPE  comm_id_long,
+                addl_info                TYPE  /kgo/fi_rrf_desc,
+                message                  TYPE  string,
+                flag                     TYPE  boolean_flg,
+                cop_initiate             TYPE /kgo/fi_yn,
+                loa_initiate             TYPE /kgo/fi_yn,
+                loa_enable               TYPE /kgo/fi_yn,
+                kostl                    TYPE  kostl,
+                ltext                    TYPE ltext,
+                supplier_agreement_date  TYPE string,
+                rrf_type                 TYPE /kgo/fi_rrf_type,
+                PO_DASHBOARD             TYPE /KGO/FI_PO_DASBOARD,
+                RRF_Line_itemSet         TYPE  STANDARD TABLE OF lty_rrf_item WITH DEFAULT KEY,
+                RRF_HEADERPOSet          TYPE  STANDARD TABLE OF lty_rrf_header_po WITH DEFAULT KEY,
+                RRF_LINEPOSet            TYPE  STANDARD TABLE OF lty_rrf_line_po WITH DEFAULT KEY,
+                RRF_AnswerSet            TYPE  STANDARD TABLE OF lty_rrf_answer WITH DEFAULT KEY,"changes for questionnaire || SMONDAL || 3-Mar-2021
+              END OF lty_rrf_header_deep,
+
+              BEGIN OF lty_gf_item,
+                company_code                   TYPE  bukrs,
+                rrf_no_gf                      TYPE  /kgo/fi_req_no,
+                requesting_mf                  TYPE  /kgo/fi_mf_gf,
+                global_cc                      TYPE  kostl,
+                landx                          TYPE  landx,
+                ltext                          TYPE  ltext,
+                process_grp                    TYPE  /kgo/fi_process_grp,
+                MEMBER_FIRM	                   TYPE	 /KGO/FI_MEMBER_FIRM,
+                CC_SHORT_DESC	                 TYPE	 /KGO/FI_CC_DESC,
+                contact_p_cop                  TYPE  /kgo/fi_mf_con_id,
+                cop_email_id                   TYPE  /kgo/fi_mf_con_email,
+                details_description_of_service TYPE  /kgo/fi_d_desc,
+                service_now_cop                TYPE  /kgo/fi_serv_no,
+                serv_now_status                TYPE  /kgo/fi_serv_status,
+                confirmation_of_participation  TYPE  /kgo/fi_conf_yn,
+                cop_att                        TYPE  /kgo/fi_conf_yn,
+                loa_contact                    TYPE  /kgo/fi_loa_contact,
+                loa_email                      TYPE  /kgo/fi_loa_email,
+                adl_loa_contact                TYPE  /kgo/fi_loa_contact,
+                adl_loa_email                  TYPE  /kgo/fi_loa_email,
+                atten_brf                      TYPE  /kgo/fi_atten_brf,
+                atten_brf_email                TYPE  /kgo/fi_atten_brf_email,
+                mf_ap_email                    TYPE  /kgo/fi_atten_brf_email,
+                entity_name                    TYPE  /kgo/fi_entity_name,
+                entity_address                 TYPE  /kgo/fi_ent_addr,
+                vat_id                         TYPE  stcd1,
+                addl_bill_info                 TYPE  string,
+                mf_cost_center                 TYPE  /kgo/fi_proj_code,
+                wh_tax                         TYPE  /kgo/fi_yn,
+                perc_y                         TYPE  /kgo/fi_percy,
+                amount                         TYPE  wrbtr,
+                billing_frequency              TYPE  /kgo/fi_freq_bill,
+                start_date                     TYPE  string,
+                end_date                       TYPE  string,
+                no_of_occur                    TYPE  /kgo/fi_no_occur,
+                service_now_loa                TYPE  /kgo/fi_serv_no,
+                letter_of_acknowledgement      TYPE  /kgo/fi_conf_yn,
+                loa_att                        TYPE  /kgo/fi_conf_yn,
+                rrf_status                     TYPE  /kgo/fi_rrfl_status,
+                sap_code_mf                    TYPE  /kgo/fi_mf_gf,
+                global_gl                      TYPE  saknr,
+                amt1                           TYPE  wrbtr,
+                amt2                           TYPE  wrbtr,
+                nature_of_service              TYPE  /kgo/fi_nos,
+                last_date_srv                  TYPE  string,
+                brief_description_of_services  TYPE  /kgo/fi_brf_desc,
+                location_of_the_services_req   TYPE  land1,
+                urn                            TYPE  /kgo/fi_urn,
+                delete_ind                     TYPE  /kgo/fi_yn,
+                bill_schedule                  TYPE  boole_d,
+                visible_bill_sch               TYPE  boole_d,
+                edit_req_mf                    TYPE  boole_d,
+                cop_initiate                   TYPE /kgo/fi_yn,
+                loa_initiate                   TYPE /kgo/fi_yn,
+                loa_enable                     TYPE /kgo/fi_yn,
+                descript                       TYPE settext,
+                cop_sctask_link                TYPE string,
+                new_entity                     TYPE /kgo/fi_yn,
+                mf_form                        TYPE char10,
+                loa_sctask_link                TYPE string,
+                invoice_type                   TYPE /kgo/fi_inv_type,
+                GF_LINE_DESC                   TYPE /kgo/fi_GF_LINE_DESC,
+                cop_yes_date                   TYPE string,
+                long_text                      TYPE string,   "Added by ABHISHEKB on 23/02/2021 for long text
+                BILLING_SYNTAX                 TYPE /KGO/FI_BILL_SYNTAX, "Added by ABHISHEKB on 26/3/2021
+                short_description              TYPE /KGO/FI_D_DESC, "Added by ABHISHEKB on 26/3/2021
+              END OF lty_gf_item,
+
+              BEGIN OF lty_gf_billing,
+                bukrs         TYPE  bukrs,
+                rrf_no_gf     TYPE  /kgo/fi_req_no,
+                requesting_mf TYPE  /kgo/fi_mf_gf,
+                global_cc     TYPE  kostl,
+                process_grp   TYPE  /kgo/fi_process_grp,
+                MEMBER_FIRM   TYPE  /KGO/FI_MEMBER_FIRM,
+                CC_SHORT_DESC TYPE  /KGO/FI_CC_DESC,
+                req_seq       TYPE  /kgo/fi_req_seq,
+                sch_date      TYPE  string,
+                waers         TYPE  waers,
+                dmbtr         TYPE  dmbtr,
+                belnr         TYPE  belnr_d,
+                budat         TYPE  budat,
+                gjahr         TYPE  gjahr,
+              END OF lty_gf_billing,
+
+              BEGIN OF lty_gf_header_deep,
+                company_code          TYPE  bukrs,
+                rrf_no_gf             TYPE  /kgo/fi_req_no,
+                total_contract_amount TYPE  wrbtr,
+                gf_desc               TYPE  /kgo/fi_rrf_desc,
+                currency              TYPE  waers,
+                coupa_cc              TYPE  kostl,
+                coupa_gl              TYPE  hkont,
+                contrl_name           TYPE  emnam,
+                contrl_email          TYPE  comm_id_long,
+                rrf_status            TYPE  /kgo/fi_rrf_status,
+                created_on            TYPE  string,
+                created_by            TYPE  ernam,
+                flag                  TYPE  /kgo/fi_error_flag,
+                message               TYPE  string,
+                bill_sche_flg         TYPE  /kgo/fi_error_flag,
+                addl_info             TYPE  /kgo/fi_rrf_desc,
+                kostl                 TYPE  kostl,
+                cop_initiate          TYPE /kgo/fi_yn,
+                loa_initiate          TYPE /kgo/fi_yn,
+                loa_enable            TYPE /kgo/fi_yn,
+                ltext                 TYPE ltext,
+                background            TYPE string,
+                activity              TYPE string,
+                can_notice_date       TYPE /kgo/fi_can_notice,
+                rrf_type              TYPE /kgo/fi_rrf_type,
+                long_text             TYPE string,
+*                gf_billingset         TYPE STANDARD TABLE OF lty_gf_billing WITH DEFAULT KEY,
+                GF_Lineitem_Set       TYPE  STANDARD TABLE OF lty_gf_item WITH DEFAULT KEY,
+                RRF_AnswerSet         TYPE  STANDARD TABLE OF lty_rrf_answer WITH DEFAULT KEY,"changes for questionnaire || SMONDAL || 3-Mar-2021
+              END OF lty_gf_header_deep,
+
+              BEGIN OF lty_gf_bill_deep,
+                bukrs         TYPE  bukrs,
+                rrf_no_gf     TYPE  /kgo/fi_req_no,
+                requesting_mf TYPE  /kgo/fi_mf_gf,
+                global_cc     TYPE  kostl,
+                message       TYPE  string,
+                flag          TYPE  boolean_flg,
+                bill_sche_flg TYPE  /kgo/fi_error_flag,
+                GF_Bill_Set   TYPE STANDARD TABLE OF lty_gf_billing WITH DEFAULT KEY,
+              END OF lty_gf_bill_deep,
+
+              "For Initita CoP
+              BEGIN OF lty_cop_line,
+                rrf_no                         TYPE  /kgo/fi_req_no,
+                requesting_mf                  TYPE  /kgo/fi_mf_gf,
+                global_cc                      TYPE  kostl,
+                landx                          TYPE  landx,
+                ltext                          TYPE  ltext,
+                process_grp                    TYPE  /kgo/fi_process_grp,
+                MEMBER_FIRM	                   TYPE	/KGO/FI_MEMBER_FIRM,
+                CC_SHORT_DESC	                 TYPE	/KGO/FI_CC_DESC,
+                contact_p_cop                  TYPE  /kgo/fi_mf_con_id,
+                cop_email_id                   TYPE  /kgo/fi_mf_con_email,
+                details_description_of_service TYPE  /kgo/fi_d_desc,
+                serv_now_cop                   TYPE  /kgo/fi_serv_no,
+                serv_now_status                TYPE  /kgo/fi_serv_status,
+                conf_yn                        TYPE  /kgo/fi_conf_yn,
+                cop_att                        TYPE  /kgo/fi_conf_yn,
+                loa_cop                        TYPE  /kgo/fi_conf_yn,
+                loa_contact                    TYPE  /kgo/fi_loa_contact,
+                loa_email                      TYPE  /kgo/fi_loa_email,
+                adl_loa_contact                TYPE  /kgo/fi_loa_contact,
+                adl_loa_email                  TYPE  /kgo/fi_loa_email,
+                atten_brf                      TYPE  /kgo/fi_atten_brf,
+                atten_brf_email                TYPE  /kgo/fi_atten_brf_email,
+                mf_ap_email                    TYPE  /kgo/fi_atten_brf_email,
+                gf_name                        TYPE  /kgo/fi_atten_brf,
+                gf_email                       TYPE  /kgo/fi_atten_brf_email,
+                entity_name                    TYPE  /kgo/fi_entity_name,
+                entity_address                 TYPE  /kgo/fi_ent_addr,
+                vat_id                         TYPE  stcd1,
+                addl_bill_info                 TYPE  /kgo/fi_addl_bill,
+                mf_cost_center                 TYPE  /kgo/fi_proj_code,
+                wh_tax                         TYPE  /kgo/fi_yn,
+                perc_y                         TYPE  /kgo/fi_percy,
+                amnt_rechrg_po                 TYPE   wrbtr,
+                loa_yn                         TYPE  /kgo/fi_yn,
+                snow_no_loa                    TYPE  /kgo/fi_serv_no,
+                supplier                       TYPE  bu_nameor1,
+                third_party_agreement          TYPE  string,
+                third_party                    TYPE  bu_nameor1,
+                legal_name                     TYPE  bu_nameor1,
+                loa_desc                       TYPE  /kgo/fi_addl_bill,
+                att_yn                         TYPE  /kgo/fi_att_yn,
+                rrf_status                     TYPE  /kgo/fi_rrfl_status,
+                sap_code_mf                    TYPE  /kgo/fi_mf_gf,
+                brief_description_of_services  TYPE  /kgo/fi_brf_desc,
+                cop_initiate                   TYPE /kgo/fi_yn,
+                loa_initiate                   TYPE /kgo/fi_yn,
+                loa_enable                     TYPE /kgo/fi_yn,
+                serv_loa_status                TYPE /kgo/fi_serv_status,
+                descript                       TYPE settext,
+                total_comm_amount              TYPE wrf_ppw_value_max,
+              END OF lty_cop_line,
+
+              BEGIN OF lty_cop_header_deep,
+                company_code            TYPE bukrs,
+                rrf_no                  TYPE  /kgo/fi_req_no,
+                action                  TYPE char10,
+                message                 TYPE  string,
+                flag                    TYPE  /kgo/fi_yn,
+                vendor_name             TYPE  bu_nameor1,
+                vendor                  TYPE lifnr,
+                currency                TYPE waers,
+                supplier_agreement_date TYPE string,
+                rrf_type                TYPE /kgo/fi_rrf_type,  "Added for validation of RRF_Type by MARINAHOTA on 30/11/2020
+                COP_LineSet             TYPE  STANDARD TABLE OF lty_cop_line WITH DEFAULT KEY,
+                COP_AnswSet             TYPE  STANDARD TABLE OF lty_rrf_answer WITH DEFAULT KEY,"changes for questionnaire || SMONDAL || 3-Mar-2021
+              END OF lty_cop_header_deep.
+
+
+        DATA:
+          ls_screen_head_item_rrf_deep TYPE lty_rrf_header_deep,
+          ls_screen_head_item_gf_deep  TYPE lty_gf_header_deep,
+          ls_screen_head_gf_bill_deep  TYPE lty_gf_bill_deep,
+          ls_screen_head_cop           TYPE lty_cop_header_deep,
+          ls_rrf_head                  TYPE /kgo/fi_mf_rrfh,
+          ls_rrf_head1                 TYPE /kgo/fi_st_mf_rrfh,
+          lt_rrf_head                  TYPE STANDARD TABLE OF /kgo/fi_mf_rrfh,
+          ls_gf_head                   TYPE /kgo/fi_gf_rrfh,
+          ls_gf_head1                  TYPE /kgo/fi_st_gf_rrfh,
+          lt_gf_head                   TYPE STANDARD TABLE OF /kgo/fi_gf_rrfh,
+          ls_rrf_item                  TYPE /kgo/fi_mf_rrfl,
+          ls_rrf_item1                 TYPE /kgo/fi_st_mf_rrfl,
+          lt_rrf_item                  TYPE STANDARD TABLE OF /kgo/fi_mf_rrfl,
+          lt_rrf_item1                 TYPE /kgo/fi_tt_mf_rrfl,
+          ls_gf_item                   TYPE /kgo/fi_gf_rrfl,
+          ls_gf_item1                  TYPE /kgo/fi_st_gf_rrfl,
+          lt_header_po                 TYPE STANDARD TABLE OF /kgo/fi_mf_rrfhp,
+          lt_line_po                   TYPE STANDARD TABLE OF /kgo/fi_mf_rrflp,
+          lt_header_po1                TYPE STANDARD TABLE OF /kgo/fi_mf_rrfhp,
+          lt_line_po1                  TYPE STANDARD TABLE OF /kgo/fi_mf_rrflp,
+          lt_gf_item                   TYPE STANDARD TABLE OF /kgo/fi_gf_rrfl,
+          lt_gf_item1                  TYPE /kgo/fi_tt_gf_rrfl,
+          lr_head_item_response        TYPE string,
+          lv_number                    TYPE char10,
+          lt_gf_bllng                  TYPE STANDARD TABLE OF /kgo/fi_gf_bllng,
+          ls_gf_bllng                  TYPE /kgo/fi_gf_bllng,
+          ls_gf_bllng1                 TYPE /kgo/fi_st_gf_bllng,
+          lt_gf_bllng1                 TYPE STANDARD TABLE OF /kgo/fi_st_gf_bllng,
+          lo_regex                     TYPE REF TO cl_abap_regex,
+          lo_matcher                   TYPE REF TO cl_abap_matcher,
+          lv_rrf_no                    TYPE /kgo/fi_req_no,
+          lv_gf_no                     TYPE /kgo/fi_req_no,
+          lv_amount                    TYPE wrbtr,
+          ls_bill                      TYPE /kgo/fi_gf_bill_sh,
+          lt_bill                      TYPE STANDARD TABLE OF /kgo/fi_gf_bill_sh,
+          ls_billsh                    TYPE /kgo/fi_gf_bllng,
+          lt_billsh                    TYPE STANDARD TABLE OF /kgo/fi_gf_bllng,
+          lv_seq                       TYPE i,
+          lv_month                     TYPE i,
+          lv_date                      TYPE sy-datum,
+          lv_newdate                   TYPE sy-datum,
+          lv_tabix                     TYPE char3,
+          lv_vend1                     TYPE lifnr, "Added for PO Validation issue on 19/11/2020 by MARINAHOTA
+          lv_gf_coo                    TYPE /kgo/fi_loa_contact, "Added for Global Functional COO change by MARINAHOTA on 01/09/2020
+          ls_user_detail               TYPE usr03,                "Added for defect 63786 by ABHISHEKB on 12/01/2021
+          lv_name1(61)                 TYPE C,       "Added for defect 63786 by ABHISHEKB on 12/01/2021
+          lt_lines                     TYPE STANDARD TABLE OF tline, "Added by ABHISHEKB on 12/02/2021
+          lv_name                      TYPE  thead-tdname, "Added by ABHISHEKB on 12/02/2021
+          lv_text                      TYPE string, "Added by ABHISHEKB on 12/02/2021
+          lt_tlines                    TYPE STANDARD TABLE OF tline, "Added by ABHISHEKB on 12/02/2021
+          lv_process                   TYPE /kgo/fi_process_grp, "Added by ABHISHEKB on 12/02/2021
+          ls_rrfitemset                TYPE /kgo/fi_st_mf_rrfl,    "Added by ABHISHEKB on 12/02/2021
+          lv_str                       TYPE string,  "Added by ABHISHEKB on 12/02/2021
+          lt_rrf_answer                TYPE STANDARD TABLE OF /KGO/FI_RRF_ANSW,"changes for questionnaire || SMONDAL || 3-Mar-2021
+          lt_rrf_answer1               TYPE STANDARD TABLE OF /KGO/FI_RRF_ANSW."changes for questionnaire || SMONDAL || 3-Mar-2021
+
+        CONSTANTS:lc_rrf TYPE char5 VALUE 'PO',
+                  lc_gf  TYPE char5 VALUE 'NP',
+                  lc_sep1 TYPE char1 VALUE cl_abap_char_utilities=>newline.
+        CASE iv_entity_set_name.
+*————————————————————————-*
+*     EntitySet –  HeaderSet
+*————————————————————————-*
+          WHEN 'RRF_HeaderSet'."For Coupa RRF
+*  Transform complex data from UI screen to into the ABAP structure
+            io_data_provider->read_entry_data(
+            IMPORTING
+            es_data = ls_screen_head_item_rrf_deep ).
+
+*     Collect the header info
+            MOVE-CORRESPONDING ls_screen_head_item_rrf_deep TO ls_rrf_head.
+            MOVE-CORRESPONDING ls_screen_head_item_rrf_deep TO ls_rrf_head1.
+
+*            IF ls_rrf_head-rrf_no IS INITIAL."During Creation
+*              SELECT COUNT(*) FROM /kgo/fi_mf_rrfh
+*                WHERE coupa_requisition_number = ls_rrf_head-coupa_requisition_number.
+*              IF sy-subrc = 0.
+*                ls_screen_head_item_rrf_deep-flag = abap_true.
+*                ls_screen_head_item_rrf_deep-message = TEXT-026.
+*              ELSE.
+            SELECT COUNT(*) FROM tcurt
+            WHERE spras = sy-langu
+            AND   waers = ls_rrf_head-currency.
+            IF sy-subrc <> 0.
+              ls_screen_head_item_rrf_deep-flag = abap_true.
+              ls_screen_head_item_rrf_deep-message = TEXT-045.
+            ENDIF.
+*              ENDIF.
+*            ENDIF.
+
+            IF ls_screen_head_item_rrf_deep-flag IS INITIAL.
+              "Validate Email Addresses
+              CREATE OBJECT lo_regex
+                EXPORTING
+                  pattern     = '\w+(\.\w+)*@(\w+\.)+(\w{2,4})'
+                  ignore_case = abap_true.
+              IF ls_screen_head_item_rrf_deep-flag IS INITIAL."No error
+                SELECT land1 FROM t005t INTO TABLE @DATA(lt_land1)
+                  WHERE spras = @sy-langu ORDER BY land1.
+*Start of change by MARINAHOTA on 05/11/2020 for defect 63430
+         IF ls_screen_head_item_rrf_deep-rrf_headerposet IS NOT INITIAL.
+
+            SELECT vendor FROM /kgo/cou_int_po
+                  INTO TABLE @DATA(lt_vendor)
+                  FOR ALL ENTRIES IN @ls_screen_head_item_rrf_deep-rrf_headerposet
+                  WHERE bukrs = @ls_screen_head_item_rrf_deep-rrf_headerposet-company_code
+                  AND po_no = @ls_screen_head_item_rrf_deep-rrf_headerposet-po_no.
+              IF sy-subrc = 0 and lt_vendor IS NOT INITIAL.
+*               Start Conversion of vendor
+                CLEAR: lv_vend1.
+                LOOP AT lt_vendor ASSIGNING FIELD-SYMBOL(<fs_vendor>).
+                  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+                    EXPORTING
+                      input         = <fs_vendor>-vendor
+                   IMPORTING
+                     output        = <fs_vendor>-vendor.
+                ENDLOOP.
+
+                CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+                    EXPORTING
+                      input         = ls_screen_head_item_rrf_deep-vendor
+                   IMPORTING
+                     output        = lv_vend1.
+*               End Conversion of vendor
+
+                SORT lt_vendor BY vendor.
+                DELETE ADJACENT DUPLICATES FROM lt_vendor COMPARING vendor.
+                DESCRIBE TABLE lt_vendor LINES DATA(lv_ven_count).
+                IF lv_ven_count GT 1.
+                  ls_screen_head_item_rrf_deep-flag = abap_true.
+                  ls_screen_head_item_rrf_deep-message = TEXT-057.
+                ELSE.
+                  IF ls_screen_head_item_rrf_deep-vendor IS NOT INITIAL.
+                   READ TABLE lt_vendor INTO DATA(lv_vendor) INDEX 1.
+                     IF ( lv_vendor <> ls_screen_head_item_rrf_deep-vendor ) OR
+                        ( lv_vendor <> lv_vend1 ). "Added for PO Validation issue on 19/11/2020 by MARINAHOTA
+                         ls_screen_head_item_rrf_deep-flag = abap_true.
+                         ls_screen_head_item_rrf_deep-message = TEXT-055.
+                     ENDIF.
+                  ENDIF.
+
+                ENDIF.
+              ENDIF.
+              CLEAR: lv_ven_count, lv_vendor.
+         ENDIF.
+
+*End of change by MARINAHOTA on 05/11/2020 for defect 63430
+
+                IF ls_screen_head_item_rrf_deep-rrf_line_itemset[] IS NOT INITIAL.
+                  SELECT kostl FROM cskt INTO TABLE @DATA(lt_kostl)
+                    FOR ALL ENTRIES IN @ls_screen_head_item_rrf_deep-rrf_line_itemset
+                    WHERE spras = @sy-langu
+                    AND   kostl = @ls_screen_head_item_rrf_deep-rrf_line_itemset-global_cc.
+                  IF sy-subrc = 0.
+                    SORT lt_kostl BY kostl.
+*Start of change for Global Functional COO name and email by MARINAHOTA on 01/09/2020
+                    SELECT kostl, gpid FROM csks INTO TABLE @DATA(lt_gf_gpid)
+                      FOR ALL ENTRIES IN @lt_kostl
+                      WHERE kostl = @lt_kostl-kostl
+                      AND bukrs = @ls_screen_head_item_rrf_deep-company_code.
+                    IF sy-subrc = 0 AND lt_gf_gpid IS NOT INITIAL.
+                      SORT lt_gf_gpid BY kostl.
+                      DELETE lt_gf_gpid WHERE gpid IS INITIAL.
+                      SELECT * FROM /kgo/fi_gis_gpid INTO TABLE @DATA(lt_gf_coo)
+                        FOR ALL ENTRIES IN @lt_gf_gpid
+                        WHERE gpid = @lt_gf_gpid-gpid.
+                      IF sy-subrc = 0 AND lt_gf_coo IS NOT INITIAL.
+                        SORT lt_gf_coo BY gpid.
+                      ENDIF.
+                    ENDIF.
+*End of change for Global Functional COO name and email by MARINAHOTA on 01/09/2020
+                  ENDIF.
+
+                  SELECT * FROM /kgo/fi_coo_att INTO TABLE @DATA(lt_coo)
+                    FOR ALL ENTRIES IN @ls_screen_head_item_rrf_deep-rrf_line_itemset
+                    WHERE member_firm = @ls_screen_head_item_rrf_deep-rrf_line_itemset-requesting_mf
+                    AND member_firm_d = @ls_screen_head_item_rrf_deep-rrf_line_itemset-member_firm.
+                    "+start of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+*                    AND start_date LE @sy-datum
+*                    AND end_date GE @sy-datum.
+                    "+end of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+                  IF sy-subrc = 0.
+                    SORT lt_coo BY member_firm member_firm_d.
+                  ENDIF.
+                ENDIF.
+
+*     Collect the item info
+                LOOP AT ls_screen_head_item_rrf_deep-rrf_line_itemset
+                  INTO DATA(ls_screen_rrf_item).
+                  lv_tabix = sy-tabix.
+                  CONDENSE lv_tabix.
+                  MOVE-CORRESPONDING ls_screen_rrf_item TO ls_rrf_item.
+                  MOVE-CORRESPONDING ls_screen_rrf_item TO ls_rrf_item1.
+*Begin of Changes by ABHISHEKB for BO Long Text on 16/07/2021
+                  ls_rrf_item1-bo_long = ls_rrf_item1-long_text.      "Long text For BO
+                  DATA(lv_long) = ls_rrf_item1-bo_long.
+                  REPLACE ALL OCCURRENCES OF '|' IN lv_long WITH ` `.
+                  ls_rrf_item1-bo_long = lv_long.
+*End of Changes by ABHISHEKB for BO Long Text on 16/07/2021
+                  IF ls_screen_rrf_item-delete_ind IS INITIAL."Not calculating deleted lines
+                    lv_amount = lv_amount + ls_rrf_item-amnt_rechrg_po + ls_rrf_item-amt2.
+                  ENDIF.
+
+*         Item table getting filled
+                  IF ls_rrf_item-global_cc IS INITIAL.
+                    ls_rrf_item-global_cc = ls_rrf_item1-global_cc = 'N/A'.
+                  ENDIF.
+                  IF ls_rrf_item-requesting_mf IS INITIAL.
+                    ls_rrf_item-requesting_mf = ls_rrf_item1-requesting_mf = 'N/A'.
+                  ENDIF.
+
+                  "Requesting Member firm validation
+                  IF ls_rrf_item-requesting_mf <> 'N/A'.
+                    READ TABLE lt_land1 INTO DATA(ls_land1)
+                    WITH KEY land1 = ls_rrf_item-requesting_mf BINARY SEARCH.
+                    IF sy-subrc <> 0.
+                        READ TABLE lt_coo INTO DATA(ls_coo) WITH KEY member_firm = ls_rrf_item-requesting_mf BINARY SEARCH.
+                        IF sy-subrc <> 0.
+                      ls_screen_head_item_rrf_deep-flag = abap_true.
+                      CONCATENATE TEXT-038 TEXT-023 lv_tabix
+                       INTO ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+                      EXIT.
+                      ENDIF.
+                    ELSE.
+                      IF ls_rrf_item1-loa_email IS INITIAL. "Added for defect 63809 by MARINAHOTA on 23/12/2020
+                        READ TABLE lt_coo INTO ls_coo WITH KEY member_firm = ls_rrf_item-requesting_mf
+                                                                     member_firm_d = ls_rrf_item-member_firm BINARY SEARCH.
+                         IF sy-subrc = 0.
+                          ls_rrf_item1-loa_contact = ls_rrf_item-loa_contact = ls_coo-coo_name.
+                          ls_rrf_item1-loa_email = ls_rrf_item-loa_email = ls_coo-coo_email_id.
+                          ls_rrf_item1-landx = ls_rrf_item-landx = ls_coo-country.
+                         "+start of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+*                         ELSE.
+*                            ls_screen_head_item_rrf_deep-flag = abap_true.
+*                            CONCATENATE TEXT-064 TEXT-023 lv_tabix
+*                             INTO ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+*                            EXIT.
+                         "+end of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+                         ENDIF.
+                      ENDIF. "Added for defect 63809 by MARINAHOTA on 23/12/2020
+
+                    ENDIF.
+                  ENDIF.
+
+                  "Global CC validation
+                  IF ls_rrf_item-global_cc <> 'N/A'.
+                    READ TABLE lt_kostl INTO DATA(ls_kostl)
+                    WITH KEY kostl = ls_rrf_item-global_cc BINARY SEARCH.
+                    IF sy-subrc <> 0.
+                      ls_screen_head_item_rrf_deep-flag = abap_true.
+                      CONCATENATE TEXT-039 TEXT-023 lv_tabix
+                       INTO ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+                      EXIT.
+*Start of change for Global Functional COO name and email by MARINAHOTA on 01/09/2020
+                    ELSE.
+                      READ TABLE lt_gf_gpid INTO DATA(ls_gf_gpid)
+                      WITH KEY kostl = ls_kostl-kostl BINARY SEARCH.
+                      IF sy-subrc = 0.
+                        READ TABLE lt_gf_coo INTO DATA(ls_gf_coo)
+                        WITH KEY gpid = ls_gf_gpid-gpid BINARY SEARCH.
+                        IF sy-subrc = 0.
+                          IF ls_rrf_item1-loa_email IS INITIAL.
+                            CONCATENATE ls_gf_coo-firstname ls_gf_coo-lastname INTO lv_gf_coo SEPARATED BY space.
+                            ls_rrf_item1-loa_contact = ls_rrf_item-loa_contact = lv_gf_coo.
+                            ls_rrf_item1-loa_email = ls_rrf_item-loa_email = ls_gf_coo-emailid.
+                          ENDIF.
+                        ENDIF.
+                      ENDIF.
+*End of change for Global Functional COO name and email by MARINAHOTA on 01/09/2020
+                    ENDIF.
+
+                  ENDIF.
+
+*Start of changes for SCTASK1895383 || TR D49K908136 || sukenduk || 05-02-2021
+*                  IF ls_rrf_item-last_date_srv IS NOT INITIAL AND ls_rrf_item-last_date_srv GT sy-datum.
+*                    ls_screen_head_item_rrf_deep-flag = abap_true.
+*                    CONCATENATE TEXT-054 TEXT-023 lv_tabix
+*                     INTO ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+*                    EXIT.
+*                  ENDIF.
+*End of changes for SCTASK1895383 || TR D49K908136 || sukenduk || 05-02-2021
+*                  IF ls_rrf_item-mf_ap_email IS NOT INITIAL.
+*                    lo_matcher = lo_regex->create_matcher( text = ls_rrf_item-mf_ap_email ).
+**
+*                    IF lo_matcher->match( ) IS INITIAL.
+*                      ls_screen_head_item_rrf_deep-flag = abap_true.
+*                      CONCATENATE TEXT-024 TEXT-023 lv_tabix
+*                      INTO ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+*                      EXIT.
+*                    ENDIF.
+*                  ENDIF.
+                  IF ls_rrf_item-legal_name IS INITIAL.
+                    ls_rrf_item-legal_name = ls_rrf_item-entity_name.
+                  ENDIF.
+
+                  IF ls_rrf_item-requesting_mf = 'N/A' AND ls_rrf_item-global_cc = 'N/A'.
+                    CONTINUE.
+                  ENDIF.
+*                  IF ls_rrf_item-details_description_of_service IS INITIAL.
+                  ls_rrf_item1-details_description_of_service = ls_rrf_item-details_description_of_service = ls_screen_head_item_rrf_deep-rrf_desc.
+                  ls_rrf_item1-loa_desc = ls_rrf_item-loa_desc = ls_screen_head_item_rrf_deep-rrf_desc.
+*                  ENDIF.
+                  APPEND: ls_rrf_item  TO lt_rrf_item,
+                          ls_rrf_item1  TO lt_rrf_item1.
+                  CLEAR:ls_rrf_item,ls_rrf_item1,ls_screen_rrf_item.
+                ENDLOOP.
+
+*                IF ls_screen_head_item_rrf_deep-flag IS INITIAL."No error
+                DESCRIBE TABLE lt_rrf_item LINES DATA(lv_line).
+
+                IF ls_screen_head_item_rrf_deep-flag IS INITIAL."No error
+                  IF lv_line GT 0.
+                    "For Non global finance line item
+                    DATA(lt_temp) = lt_rrf_item[].
+                    DATA(lt_temp1) = lt_rrf_item[].
+                    DELETE lt_temp WHERE requesting_mf = 'N/A'.
+                    DELETE lt_temp1 WHERE requesting_mf = 'N/A'.
+                    SORT lt_temp BY requesting_mf process_grp member_firm.
+                    DELETE ADJACENT DUPLICATES FROM lt_temp
+                    COMPARING requesting_mf process_grp member_firm.
+                    DESCRIBE TABLE lt_temp LINES DATA(lv_mf).
+                    DESCRIBE TABLE lt_temp1 LINES DATA(lv_item).
+
+                    IF lv_mf <> lv_item."Duplicate Line item checking for non global finance
+                      ls_screen_head_item_rrf_deep-flag = abap_true.
+                      ls_screen_head_item_rrf_deep-message = TEXT-015.
+                    ENDIF.
+                  ENDIF.
+
+                  IF ls_screen_head_item_rrf_deep-flag IS INITIAL."No error
+                    IF lv_line GT 0.
+                      "For global finance line item
+                      CLEAR:lv_mf,lv_item.
+                      lt_temp = lt_rrf_item[].
+                      lt_temp1 = lt_rrf_item[].
+
+                      DELETE lt_temp WHERE requesting_mf <> 'N/A'.
+                      DELETE lt_temp1 WHERE requesting_mf <> 'N/A'.
+                      SORT lt_temp BY global_cc cc_short_desc.
+                      DELETE ADJACENT DUPLICATES FROM lt_temp COMPARING global_cc cc_short_desc.
+                      DESCRIBE TABLE lt_temp LINES lv_mf.
+                      DESCRIBE TABLE lt_temp1 LINES lv_item.
+
+                      IF lv_mf <> lv_item."Duplicate Line item checking for Global Finance
+                        ls_screen_head_item_rrf_deep-flag = abap_true.
+                        ls_screen_head_item_rrf_deep-message = TEXT-017.
+                      ENDIF.
+                    ENDIF.
+
+*                  IF ls_screen_head_item_rrf_deep-flag IS INITIAL."No error
+                    IF ls_screen_head_item_rrf_deep-flag IS INITIAL."No error
+
+                      "Getting the PO Value header and line item
+                      MOVE-CORRESPONDING ls_screen_head_item_rrf_deep-rrf_headerposet
+                      TO lt_header_po.
+                      MOVE-CORRESPONDING ls_screen_head_item_rrf_deep-rrf_lineposet
+                      TO lt_line_po.
+*                     Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+                      MOVE-CORRESPONDING ls_screen_head_item_rrf_deep-RRF_AnswerSet
+                      TO lt_rrf_answer.
+*                     End of changes or questionnaire || SMONDAL || 3-Mar-2021
+                      IF ls_rrf_head-rrf_no IS INITIAL."During Creation
+                        DATA(lv_create) = abap_true.
+                        "+Begin of addition for new no. range for company code 9921 on 17.11.2020
+                      IF ls_rrf_head-company_code = '9901'.
+                      "+End of addition for new no. range for company code 9921 on 17.11.2020
+                        "To get the PO RRF Number
+                        CALL FUNCTION 'NUMBER_GET_NEXT'
+                          EXPORTING
+                            nr_range_nr             = '01'
+                            object                  = '/KGO/FI_RR'
+                            quantity                = '1'
+                          IMPORTING
+                            number                  = lv_number
+                          EXCEPTIONS
+                            interval_not_found      = 1
+                            number_range_not_intern = 2
+                            object_not_found        = 3
+                            quantity_is_0           = 4
+                            quantity_is_not_1       = 5
+                            interval_overflow       = 6
+                            buffer_overflow         = 7
+                            OTHERS                  = 8.
+                        IF sy-subrc <> 0.
+* Implement suitable error handling here
+                        ENDIF.
+                        IF lv_number IS NOT INITIAL.
+                          lv_rrf_no = lc_rrf && lv_number. "Getting RRF No.
+                          ls_rrf_head1-rrf_no = ls_rrf_head-rrf_no = lv_rrf_no.
+                        ENDIF.
+                        "+Begin of addition for new no. range for company code 9921 on 17.11.2020
+                        ELSE."For Company Code 9921
+                          "To get the PO RRF Number
+                        CALL FUNCTION 'NUMBER_GET_NEXT'
+                          EXPORTING
+                            nr_range_nr             = '01'
+                            object                  = '/KGO/RRF_P'
+                            quantity                = '1'
+                          IMPORTING
+                            number                  = lv_number
+                          EXCEPTIONS
+                            interval_not_found      = 1
+                            number_range_not_intern = 2
+                            object_not_found        = 3
+                            quantity_is_0           = 4
+                            quantity_is_not_1       = 5
+                            interval_overflow       = 6
+                            buffer_overflow         = 7
+                            OTHERS                  = 8.
+                        IF sy-subrc <> 0.
+* Implement suitable error handling here
+                        ENDIF.
+                        IF lv_number IS NOT INITIAL.
+                          lv_rrf_no = lc_rrf && lv_number. "Getting RRF No.
+                          ls_rrf_head1-rrf_no = ls_rrf_head-rrf_no = lv_rrf_no.
+                        ENDIF.
+                        ENDIF.
+                         "+End of addition for new no. range for company code 9921 on 17.11.2020
+                      ENDIF.
+
+                      "Validating Input Values
+                      CALL METHOD /kgo/cl_fi_ar_recharge_dpc_ext=>rrf_validate
+                        IMPORTING
+                          ex_msg    = DATA(lv_msg)
+                          ex_flag   = DATA(lv_flg)
+                        CHANGING
+                          ch_header = ls_rrf_head1
+                          ch_item   = lt_rrf_item1.
+
+
+                      IF lv_flg IS INITIAL."No error
+                        MOVE-CORRESPONDING ls_rrf_head1 TO ls_rrf_head.
+                        IF lv_create = abap_false."Populating creation date for Edit/Display
+                          SELECT SINGLE rrf_creation_date rrf_creator rrf_creator_name FROM /kgo/fi_mf_rrfh
+                            INTO (ls_rrf_head-rrf_creation_date, ls_rrf_head-rrf_creator, ls_rrf_head-rrf_creator_name)
+                            WHERE company_code = ls_rrf_head-company_code
+                            AND   rrf_no = ls_rrf_head-rrf_no.
+                          IF sy-subrc = 0.
+                            "do nothiong
+                          ENDIF.
+                        ELSE.
+*Begin of changes for Defect #63786 by ABHISHEK BISWAS on 12/01/2021
+* lookup for the actual name
+           CALL FUNCTION 'SUSR_SHOW_USER_DETAILS'
+            EXPORTING
+              bname      = sy-uname
+              mandt      = sy-mandt
+              no_display = 'X'
+            CHANGING
+              user_usr03 = ls_user_detail.
+
+  CONCATENATE ls_user_detail-name1 ls_user_detail-name2 INTO lv_name1
+                      SEPARATED BY space.
+                          ls_rrf_head-rrf_creation_date = sy-datum.
+                          ls_rrf_head-rrf_creator = sy-uname.
+                          ls_rrf_head-rrf_creator_name = lv_name1.  "Added for Defect #63786 by Abhishek Biswas on 12/01/2021
+                        ENDIF.
+                        "Appending header data
+                        APPEND ls_rrf_head TO lt_rrf_head.
+
+                        "Populating RRF no to po header table
+                        lt_header_po1 = VALUE #( FOR ls_h_po IN lt_header_po (
+                                                company_code = ls_h_po-company_code
+                                                rrf_no = ls_rrf_head-rrf_no
+                                                coupa_contract_no = ls_rrf_head-coupa_requisition_number
+                                                po_year = ls_h_po-po_year
+                                                po_start_date = ls_h_po-po_start_date
+                                                po_end_date = ls_h_po-po_end_date
+                                                po_no = ls_h_po-po_no ) ).
+
+
+                        "Populating RRF no to po line item table
+                        lt_line_po1 = VALUE #( FOR ls_l_po IN lt_line_po (
+                                                company_code = ls_l_po-company_code
+                                                rrf_no = ls_rrf_head-rrf_no
+                                                coupa_contract_no = ls_rrf_head-coupa_requisition_number
+                                                requesting_mf = ls_l_po-requesting_mf
+                                                global_cc = ls_l_po-global_cc
+                                                process_grp = ls_l_po-process_grp
+                                                MEMBER_FIRM = ls_l_po-MEMBER_FIRM
+                                                CC_SHORT_DESC = ls_l_po-CC_SHORT_DESC
+                                                serial_no = ls_l_po-serial_no "+Added for comm sec serial no on 30.03.2021
+                                                po_amount = ls_l_po-po_amount
+                                                srv_chrg = ls_l_po-srv_chrg
+                                                po_year = ls_l_po-po_year
+                                                po_start_date = ls_l_po-po_start_date
+                                                po_end_date = ls_l_po-po_end_date
+                                                brf_no = ls_l_po-brf_no
+                                                outline_text = ls_l_po-outline_text ) ).
+
+*                       Start of changes or questionnaire || SMONDAL || 3-Mar-2021
+                        lt_rrf_answer1 = VALUE #( FOR ls_rrf_answer IN lt_rrf_answer (
+                                                company_code = ls_rrf_answer-company_code
+                                                rrf_no = ls_rrf_head-rrf_no
+                                                requesting_mf = ls_rrf_answer-requesting_mf
+                                                global_cc = ls_rrf_answer-global_cc
+                                                process_grp = ls_rrf_answer-process_grp
+                                                MEMBER_FIRM = ls_rrf_answer-MEMBER_FIRM
+                                                CC_SHORT_DESC = ls_rrf_answer-CC_SHORT_DESC
+                                                transaction_type = ls_rrf_answer-transaction_type
+                                                QUESTION = ls_rrf_answer-QUESTION
+                                                BRF_NO = ls_rrf_answer-BRF_NO
+                                                ANSWER = ls_rrf_answer-ANSWER
+                                                ANSWER_DESC = ls_rrf_answer-ANSWER_DESC
+                                                LINE_TYPE = ls_rrf_answer-LINE_TYPE
+                                                USER_ID = sy-uname
+                                                RECORD_DATE = sy-datum
+                                                RECORD_TIME = sy-uzeit
+                                                INTERNAL_EXTERNAL = ls_rrf_answer-INTERNAL_EXTERNAL ) ).
+*                       End of changes for questionnaire || SMONDAL || 3-Mar-2021
+                        MOVE-CORRESPONDING lt_rrf_item1 TO lt_rrf_item.
+
+                        IF  lt_rrf_head[] IS NOT INITIAL.
+                          MODIFY /kgo/fi_mf_rrfh FROM TABLE lt_rrf_head.
+                        ENDIF.
+
+                        IF  lt_rrf_item[] IS NOT INITIAL.
+                          MODIFY /kgo/fi_mf_rrfl FROM TABLE lt_rrf_item.
+                        ENDIF.
+
+                        IF sy-subrc = 0.
+                          DELETE FROM /kgo/fi_mf_rrfhp WHERE company_code = ls_rrf_head-company_code
+                                                  AND rrf_no = ls_rrf_head-rrf_no.
+*                                                      AND coupa_contract_no = ls_rrf_head-coupa_requisition_number.
+                          IF  lt_header_po1[] IS NOT INITIAL.
+                            MODIFY /kgo/fi_mf_rrfhp FROM TABLE lt_header_po1.
+                          ENDIF.
+                          DELETE FROM /kgo/fi_mf_rrflp WHERE company_code = ls_rrf_head-company_code
+                                                  AND rrf_no = ls_rrf_head-rrf_no.
+*                                                      AND coupa_contract_no = ls_rrf_head-coupa_requisition_number.
+                          IF  lt_line_po1[] IS NOT INITIAL.
+                            MODIFY /kgo/fi_mf_rrflp FROM TABLE lt_line_po1.
+                          ENDIF.
+*                         Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+                          IF lt_rrf_answer1[] IS NOT INITIAL.
+                            MODIFY /kgo/fi_rrf_answ  FROM TABLE lt_rrf_answer1.
+                          ENDIF.
+*                         End of changes for questionnaire || SMONDAL || 3-Mar-2021
+                          COMMIT WORK AND WAIT.
+                          WAIT UP TO 1 SECONDS.
+                        ENDIF.
+                        IF lv_create = abap_true.
+                          ls_screen_head_item_rrf_deep-message = TEXT-008 && ls_rrf_head-rrf_no.
+                          CONCATENATE ls_screen_head_item_rrf_deep-message TEXT-009 INTO
+                          ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+                          ls_screen_head_item_rrf_deep-rrf_no = ls_rrf_head-rrf_no.
+                          "Update History
+                          LOOP AT lt_rrf_item INTO ls_rrf_item.
+*Begin Of Changes by ABHISHEKB on 12/02/2021
+                                IF ls_rrf_item-global_cc = 'N/A' AND ls_rrf_item-long_text IS NOT INITIAL.
+                                CLEAR: lt_lines, lv_name, lt_tlines.
+                                lv_process = ls_rrf_item-process_grp.
+                                TRANSLATE lv_process TO UPPER CASE.
+                                CONDENSE ls_rrf_item-member_firm.
+                                CONCATENATE  ls_rrf_item-rrf_no '_'  "For Line Item longtext
+                                             ls_rrf_item-requesting_mf '_'
+                                             lv_process '_'
+                                             ls_rrf_item-member_firm
+                                             INTO lv_name.
+                                ENDIF.
+                                lv_str = ls_rrf_item-long_text.
+
+                                REPLACE ALL OCCURRENCES OF '|' IN lv_str WITH lc_sep1.
+                                DATA(lt_strings) = VALUE string_table( ( lv_str ) ).
+
+                                TRY .
+
+                                    CALL FUNCTION 'CONVERT_STREAM_TO_ITF_TEXT'
+                                      EXPORTING
+                                        stream_lines = lt_strings
+                                        language     = sy-langu
+                                        lf           = 'X'
+                                      TABLES
+                                        itf_text     = lt_lines.
+
+                                  CATCH cx_root.
+                                ENDTRY.
+
+                     IF sy-subrc = 0 AND lt_lines IS NOT INITIAL.
+                        CALL METHOD /kgo/fi_ar_utility=>update_std_text
+                           EXPORTING
+                               im_id         = 'ST'
+                               im_name       = lv_name
+                               im_object     = 'TEXT'
+                               im_lt_tdlines = lt_lines.
+*                          IMPORTING
+*                              ex_flag       = ls_brf_head_item_deep-flag
+*                              ex_ret        = ls_brf_head_item_deep-message.
+
+                        ENDIF.
+                  CLEAR: lt_strings.
+*End of changes by ABHISHEKB on 12/02/2021
+                            CALL METHOD /kgo/fi_ar_utility=>history_update
+                              EXPORTING
+                                im_rrf    = ls_rrf_item-rrf_no
+                                im_mf     = ls_rrf_item-requesting_mf
+                                im_pgrp   = ls_rrf_item-process_grp
+                                im_cc     = ls_rrf_item-global_cc
+                                im_bukrs  = ls_rrf_item-company_code
+                                im_action = '001'
+                                im_memberfirm = ls_rrf_item-member_firm
+                                im_cc_short_desc = ls_rrf_item-cc_short_desc.
+*                                    im_rid     =
+
+                          ENDLOOP.
+                        ELSE.
+                          ls_screen_head_item_rrf_deep-message = ls_rrf_head-rrf_no.
+                          CONCATENATE ls_screen_head_item_rrf_deep-message TEXT-011
+                          INTO ls_screen_head_item_rrf_deep-message SEPARATED BY space.
+                          "Update History
+                          LOOP AT lt_rrf_item INTO ls_rrf_item.
+*Begin Of Changes by ABHISHEKB on 12/02/2021
+                                IF ls_rrf_item-global_cc = 'N/A' AND ls_rrf_item-long_text IS NOT INITIAL.
+                                CLEAR: lt_lines, lv_name, lt_tlines.
+                                lv_process = ls_rrf_item-process_grp.
+                                TRANSLATE lv_process TO UPPER CASE.
+                                CONDENSE ls_rrf_item-member_firm.
+                                CONCATENATE  ls_rrf_item-rrf_no '_'  "For Line Item longtext
+                                             ls_rrf_item-requesting_mf '_'
+                                             lv_process '_'
+                                             ls_rrf_item-member_firm
+                                             INTO lv_name.
+                                ENDIF.
+                                lv_str = ls_rrf_item-long_text.
+
+                                REPLACE ALL OCCURRENCES OF '|' IN lv_str WITH lc_sep1.
+                                lt_strings = VALUE string_table( ( lv_str ) ).
+
+                                TRY .
+
+                                    CALL FUNCTION 'CONVERT_STREAM_TO_ITF_TEXT'
+                                      EXPORTING
+                                        stream_lines = lt_strings
+                                        language     = sy-langu
+                                        lf           = 'X'
+                                      TABLES
+                                        itf_text     = lt_lines.
+
+                                  CATCH cx_root.
+                                ENDTRY.
+
+                     IF sy-subrc = 0 AND lt_lines IS NOT INITIAL.
+                        CALL METHOD /kgo/fi_ar_utility=>update_std_text
+                           EXPORTING
+                               im_id         = 'ST'
+                               im_name       = lv_name
+                               im_object     = 'TEXT'
+                               im_lt_tdlines = lt_lines.
+*                          IMPORTING
+*                              ex_flag       = ls_brf_head_item_deep-flag
+*                              ex_ret        = ls_brf_head_item_deep-message.
+
+                        ENDIF.
+                  CLEAR: lt_strings.
+*End of changes by ABHISHEKB on 12/02/2021
+                            CALL METHOD /kgo/fi_ar_utility=>history_update
+                              EXPORTING
+                                im_rrf    = ls_rrf_item-rrf_no
+                                im_mf     = ls_rrf_item-requesting_mf
+                                im_pgrp   = ls_rrf_item-process_grp
+                                im_cc     = ls_rrf_item-global_cc
+                                im_bukrs  = ls_rrf_item-company_code
+                                im_action = '002'
+                                im_memberfirm = ls_rrf_item-member_firm
+                                im_cc_short_desc = ls_rrf_item-cc_short_desc.
+                          ENDLOOP.
+                        ENDIF.
+                      ELSE."Error
+                        ls_screen_head_item_rrf_deep-flag = abap_true.
+                        ls_screen_head_item_rrf_deep-message = lv_msg.
+                      ENDIF.
+                    ENDIF.
+*                      ENDIF.
+                  ENDIF.
+                ENDIF.
+*                ENDIF.
+              ENDIF.
+            ENDIF.
+            "+Begin of addition to prevent concurrent access to RRF on 05.11.2020
+            IF ls_screen_head_item_rrf_deep-flag IS INITIAL.
+              "Unlocking RRF
+              CALL METHOD /kgo/fi_ar_utility=>rrf_unlock
+                EXPORTING
+                  im_bukrs       = ls_screen_head_item_rrf_deep-company_code
+                  im_rrf         = ls_screen_head_item_rrf_deep-rrf_no
+                IMPORTING
+                  ex_unlock_flag = DATA(lv_unlock)
+                  ex_msg         = DATA(lv_unlock_msg).
+
+            ENDIF.
+            "+End of addition to prevent concurrent access to RRF on 05.11.2020
+            " Send the Response back to UI
+            copy_data_to_ref(
+            EXPORTING
+            is_data = ls_screen_head_item_rrf_deep
+            CHANGING
+            cr_data = er_deep_entity ).
+
+          WHEN 'GF_BHSet'."To update Billing schedule
+*  transform complex data from ui screen to into the abap structure
+            io_data_provider->read_entry_data(
+            IMPORTING
+            es_data = ls_screen_head_gf_bill_deep ).
+
+*     Collect the Line item info
+            DATA:lv_seq1 TYPE char3,
+                 lv_pgrp TYPE /kgo/fi_process_grp,
+                 lv_MEMBER_FIRM   TYPE  /KGO/FI_MEMBER_FIRM,
+                 lv_CC_SHORT_DESC TYPE  /KGO/FI_CC_DESC.
+
+            SORT ls_screen_head_gf_bill_deep-gf_bill_set BY rrf_no_gf requesting_mf req_seq.
+            LOOP AT ls_screen_head_gf_bill_deep-gf_bill_set INTO DATA(ls_screen_gf_bill).
+
+              "Repetated sequence no. validation
+              IF sy-tabix GT 1.
+                IF lv_seq1 = ls_screen_gf_bill-req_seq.
+                  ls_screen_head_gf_bill_deep-flag = abap_true.
+                  ls_screen_head_gf_bill_deep-message = TEXT-033.
+                  EXIT.
+                ENDIF.
+              ENDIF.
+
+              "Amount validation
+              IF ls_screen_gf_bill-dmbtr IS INITIAL.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-034.
+                EXIT.
+              ENDIF.
+
+              "Amount Should not be negetive
+              IF ls_screen_gf_bill-dmbtr LT 0.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-034.
+                EXIT.
+              ENDIF.
+
+              "Schedule date validation
+              IF ls_screen_gf_bill-sch_date IS INITIAL.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-035.
+                EXIT.
+              ENDIF.
+              "Sequence no. Validation
+              IF ls_screen_gf_bill-req_seq IS INITIAL.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-032.
+                EXIT.
+              ELSEIF ls_screen_gf_bill-req_seq = '00'.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-032.
+                EXIT.
+              ELSEIF ls_screen_gf_bill-req_seq = '000'.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-032.
+                EXIT.
+              ELSEIF ls_screen_gf_bill-req_seq = '0'.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-032.
+                EXIT.
+              ENDIF.
+              MOVE-CORRESPONDING ls_screen_gf_bill TO ls_billsh.
+              lv_seq1 = ls_screen_gf_bill-req_seq.
+*         Item table getting filled
+              lv_amount = ls_billsh-dmbtr + lv_amount.
+              APPEND:ls_billsh TO lt_billsh.
+              IF lv_pgrp IS INITIAL.
+                lv_pgrp = ls_billsh-process_grp.
+              ENDIF.
+              IF lv_member_firm IS INITIAL.
+                lv_member_firm = ls_billsh-member_firm.
+              ENDIF.
+              IF lv_cc_short_desc IS INITIAL.
+                lv_cc_short_desc = ls_billsh-cc_short_desc.
+              ENDIF.
+              CLEAR:ls_billsh.
+            ENDLOOP.
+            IF ls_screen_head_gf_bill_deep-flag = abap_false.
+              SELECT SINGLE amount FROM /kgo/fi_gf_rrfl INTO @DATA(lv_amt)
+                WHERE company_code = @ls_screen_head_gf_bill_deep-bukrs
+                AND rrf_no_gf = @ls_screen_head_gf_bill_deep-rrf_no_gf
+                AND requesting_mf = @ls_screen_head_gf_bill_deep-requesting_mf
+                AND global_cc = @ls_screen_head_gf_bill_deep-global_cc
+                AND process_grp = @lv_pgrp
+                AND member_firm = @lv_member_firm
+                AND cc_short_desc = @lv_cc_short_desc.
+              IF sy-subrc = 0 AND lv_amount <> lv_amt.
+                ls_screen_head_gf_bill_deep-flag = abap_true.
+                ls_screen_head_gf_bill_deep-message = TEXT-046.
+              ENDIF.
+            ENDIF.
+            IF lt_billsh[] IS NOT INITIAL AND ls_screen_head_gf_bill_deep-flag = abap_false.
+              DELETE FROM /kgo/fi_gf_bllng WHERE bukrs = ls_screen_head_gf_bill_deep-bukrs
+                                           AND rrf_no_gf = ls_screen_head_gf_bill_deep-rrf_no_gf
+                                           AND requesting_mf = ls_screen_head_gf_bill_deep-requesting_mf
+                                           AND global_cc = ls_screen_head_gf_bill_deep-global_cc
+                                           AND process_grp = lv_pgrp
+                                           AND member_firm = lv_member_firm
+                                           AND cc_short_desc = lv_cc_short_desc..
+
+              MODIFY /kgo/fi_gf_bllng FROM TABLE lt_billsh.
+              IF sy-subrc = 0.
+                COMMIT WORK AND WAIT.
+                WAIT UP TO 1 SECONDS.
+                IF ls_screen_head_gf_bill_deep-global_cc = 'N/A'.
+                  ls_screen_head_gf_bill_deep-message = TEXT-030.
+                ELSE.
+                  ls_screen_head_gf_bill_deep-message = TEXT-042.
+                ENDIF.
+*               LOOP AT lt_billsh INTO ls_billsh.
+                "History Update
+                CALL METHOD /kgo/fi_ar_utility=>history_update
+                  EXPORTING
+                    im_rrf    = ls_screen_head_gf_bill_deep-rrf_no_gf
+                    im_mf     = ls_screen_head_gf_bill_deep-requesting_mf
+                    im_pgrp   = lv_pgrp
+                    im_cc     = ls_screen_head_gf_bill_deep-global_cc
+                    im_bukrs  = ls_screen_head_gf_bill_deep-bukrs
+                    im_memberfirm = lv_member_firm
+                    im_cc_short_desc = lv_cc_short_desc
+                    im_action = '025'.
+*               ENDLOOP.
+              ENDIF.
+            ENDIF.
+
+            " Send the Response back to UI
+            copy_data_to_ref(
+            EXPORTING
+            is_data = ls_screen_head_gf_bill_deep
+            CHANGING
+            cr_data = er_deep_entity ).
+
+          WHEN 'GF_HeaderSet'."For Non Coupa RRF
+*  transform complex data from ui screen to into the abap structure
+            io_data_provider->read_entry_data(
+            IMPORTING
+            es_data = ls_screen_head_item_gf_deep ).
+
+*     Collect the header info
+            MOVE-CORRESPONDING ls_screen_head_item_gf_deep TO ls_gf_head.
+            MOVE-CORRESPONDING ls_screen_head_item_gf_deep TO ls_gf_head1.
+
+            SELECT COUNT(*) FROM tcurt
+            WHERE spras = sy-langu
+            AND   waers = ls_gf_head-currency.
+            IF sy-subrc <> 0.
+              ls_screen_head_item_gf_deep-flag = abap_true.
+              ls_screen_head_item_gf_deep-message = TEXT-045.
+            ENDIF.
+
+            IF ls_screen_head_item_gf_deep-flag IS INITIAL. "No error
+              "Validate Email Addresses
+              CREATE OBJECT lo_regex
+                EXPORTING
+                  pattern     = '\w+(\.\w+)*@(\w+\.)+(\w{2,4})'
+                  ignore_case = abap_true.
+
+              IF ls_gf_head-rrf_no_gf IS INITIAL."During Creation
+*Begin of changes for Defect #63786 by ABHISHEK BISWAS on 12/01/2021
+* lookup for the actual name
+           CALL FUNCTION 'SUSR_SHOW_USER_DETAILS'
+            EXPORTING
+              bname      = sy-uname
+              mandt      = sy-mandt
+              no_display = 'X'
+            CHANGING
+              user_usr03 = ls_user_detail.
+
+  CONCATENATE ls_user_detail-name1 ls_user_detail-name2 INTO lv_name1
+                      SEPARATED BY space.
+                lv_create = abap_true.
+                ls_gf_head-created_on = sy-datum.
+                ls_gf_head-created_by = sy-uname.
+                ls_gf_head-rrf_creator_name = lv_name1.  "Added for Defect #63786 by Abhishek Biswas on 12/01/2021
+                 "+Begin of addition for new no. range for company code 9921 on 17.11.2020
+               IF ls_gf_head-company_code = '9901'.
+                  "+End of addition for new no. range for company code 9921 on 17.11.2020
+                "To get the NP RRF Number
+                CALL FUNCTION 'NUMBER_GET_NEXT'
+                  EXPORTING
+                    nr_range_nr             = '01'
+                    object                  = '/KGO/FI_GF'
+                    quantity                = '1'
+                  IMPORTING
+                    number                  = lv_number
+                  EXCEPTIONS
+                    interval_not_found      = 1
+                    number_range_not_intern = 2
+                    object_not_found        = 3
+                    quantity_is_0           = 4
+                    quantity_is_not_1       = 5
+                    interval_overflow       = 6
+                    buffer_overflow         = 7
+                    OTHERS                  = 8.
+                IF sy-subrc <> 0.
+* Implement suitable error handling here
+                ENDIF.
+                 "+Begin of addition for new no. range for company code 9921 on 17.11.2020
+                  ELSE."For Company Code 9921
+                  "To get the NP RRF Number
+                  CALL FUNCTION 'NUMBER_GET_NEXT'
+                  EXPORTING
+                    nr_range_nr             = '01'
+                    object                  = '/KGO/RRF_N'
+                    quantity                = '1'
+                  IMPORTING
+                    number                  = lv_number
+                  EXCEPTIONS
+                    interval_not_found      = 1
+                    number_range_not_intern = 2
+                    object_not_found        = 3
+                    quantity_is_0           = 4
+                    quantity_is_not_1       = 5
+                    interval_overflow       = 6
+                    buffer_overflow         = 7
+                    OTHERS                  = 8.
+                IF sy-subrc <> 0.
+* Implement suitable error handling here
+                ENDIF.
+                ENDIF.
+                 "+End of addition for new no. range for company code 9921 on 17.11.2020
+                IF lv_number IS NOT INITIAL.
+                  lv_gf_no = lc_gf && lv_number. "Getting RRF No.
+                  ls_screen_head_item_gf_deep-rrf_no_gf = ls_gf_head1-rrf_no_gf = ls_gf_head-rrf_no_gf = lv_gf_no.
+                ENDIF.
+              ENDIF.
+              IF ls_gf_head-rrf_no_gf IS NOT INITIAL .
+
+
+                SELECT land1 FROM t005t INTO TABLE lt_land1
+                                  WHERE spras = sy-langu ORDER BY land1.
+
+                IF ls_screen_head_item_gf_deep-gf_lineitem_set[] IS NOT INITIAL.
+                  SELECT kostl FROM cskt INTO TABLE lt_kostl
+                    FOR ALL ENTRIES IN ls_screen_head_item_gf_deep-gf_lineitem_set
+                    WHERE spras = sy-langu
+                    AND   kostl = ls_screen_head_item_gf_deep-gf_lineitem_set-global_cc.
+                  IF sy-subrc = 0.
+                    SORT lt_kostl BY kostl.
+*Start of change for defect 63474 Global Functional COO email by MARINAHOTA on 22/12/2020
+                    SELECT kostl, gpid FROM csks INTO TABLE @lt_gf_gpid
+                      FOR ALL ENTRIES IN @lt_kostl
+                      WHERE kostl = @lt_kostl-kostl
+                      AND bukrs = @ls_screen_head_item_gf_deep-company_code.
+                    IF sy-subrc = 0 AND lt_gf_gpid IS NOT INITIAL.
+                      SORT lt_gf_gpid BY kostl.
+                      DELETE lt_gf_gpid WHERE gpid IS INITIAL.
+                      SELECT * FROM /kgo/fi_gis_gpid INTO TABLE @lt_gf_coo
+                        FOR ALL ENTRIES IN @lt_gf_gpid
+                        WHERE gpid = @lt_gf_gpid-gpid.
+                      IF sy-subrc = 0 AND lt_gf_coo IS NOT INITIAL.
+                        SORT lt_gf_coo BY gpid.
+                      ENDIF.
+                    ENDIF.
+*End of change for defect 63474 Global Functional COO email by MARINAHOTA on 22/12/2020
+                  ENDIF.
+
+                  SELECT * FROM /kgo/fi_coo_att INTO TABLE lt_coo
+                    FOR ALL ENTRIES IN ls_screen_head_item_gf_deep-gf_lineitem_set
+                    WHERE member_firm = ls_screen_head_item_gf_deep-gf_lineitem_set-requesting_mf
+                    AND member_firm_d = ls_screen_head_item_gf_deep-gf_lineitem_set-member_firm.
+                    "+start of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+*                    AND start_date LE sy-datum
+*                    AND end_date GE sy-datum.
+                    "+end of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+                  IF sy-subrc = 0.
+                    SORT lt_coo BY member_firm member_firm_d.
+                  ENDIF.
+                ENDIF.
+
+*                Start of changes for COP and LOA confirm date || smondal || TR D49K909676 || 13-08-2021
+                SELECT COMPANY_CODE, RRF_NO_GF ,REQUESTING_MF, GLOBAL_CC ,PROCESS_GRP, MEMBER_FIRM ,CC_SHORT_DESC, cop_initiate_date, cop_confirm_date
+                  FROM /KGO/FI_GF_RRFL INTO TABLE @DATA(lt_cop_date) FOR ALL ENTRIES IN @ls_screen_head_item_gf_deep-gf_lineitem_set
+                  where COMPANY_CODE = @ls_screen_head_item_gf_deep-gf_lineitem_set-company_code and
+                   RRF_NO_GF = @ls_screen_head_item_gf_deep-gf_lineitem_set-rrf_no_gf and
+                   REQUESTING_MF = @ls_screen_head_item_gf_deep-gf_lineitem_set-requesting_mf and
+                   GLOBAL_CC = @ls_screen_head_item_gf_deep-gf_lineitem_set-global_cc and
+                   PROCESS_GRP = @ls_screen_head_item_gf_deep-gf_lineitem_set-process_grp and
+                   MEMBER_FIRM = @ls_screen_head_item_gf_deep-gf_lineitem_set-MEMBER_FIRM and
+                   CC_SHORT_DESC = @ls_screen_head_item_gf_deep-gf_lineitem_set-CC_SHORT_DESC
+                  order by PRIMARY KEY.
+*                End of changes for COP and LOA confirm date || smondal || TR D49K909676 || 13-08-2021
+
+*     Collect the Line item info
+                LOOP AT ls_screen_head_item_gf_deep-gf_lineitem_set INTO DATA(ls_screen_gf_item).
+                  lv_tabix = sy-tabix.
+                  MOVE-CORRESPONDING ls_screen_gf_item TO ls_gf_item.
+                  MOVE-CORRESPONDING ls_screen_gf_item TO ls_gf_item1.
+                  MOVE-CORRESPONDING ls_screen_gf_item TO ls_bill.
+*Begin of Changes by ABHISHEKB for BO Long Text on 16/07/2021
+                 ls_gf_item-bo_long = ls_gf_item-long_text.  ""Long Text For BO
+                 DATA(lv_long1) = ls_gf_item-bo_long.
+                 REPLACE ALL OCCURRENCES OF  '|' IN lv_long1 WITH ` `.
+                 ls_gf_item-bo_long = lv_long1.
+*End of Changes by ABHISHEKB for BO Long Text on 16/07/2021
+                  IF ls_screen_gf_item-delete_ind IS INITIAL."Not calculating deleted lines
+                    lv_amount = lv_amount + ls_gf_item-amount.
+                  ENDIF.
+                  ls_bill-rrf_no_gf = ls_gf_item-rrf_no_gf = ls_gf_head-rrf_no_gf.
+                  ls_bill-company_code = ls_gf_item-company_code = ls_gf_head-company_code.
+
+                  IF ls_gf_item-global_cc IS INITIAL.
+                    ls_gf_item-global_cc = ls_gf_item1-global_cc = 'N/A'.
+                  ENDIF.
+                  IF ls_gf_item-requesting_mf IS INITIAL.
+                    ls_gf_item-requesting_mf = ls_gf_item1-requesting_mf = 'N/A'.
+                  ENDIF.
+*                  IF ls_gf_item-legal_name IS INITIAL.
+*                    ls_gf_item-legal_name = ls_gf_item-entity_name.
+*                  ENDIF.
+
+                  "Requesting Member firm validation
+                  IF ls_gf_item-requesting_mf <> 'N/A'.
+                    READ TABLE lt_land1 INTO ls_land1
+                    WITH KEY land1 = ls_gf_item-requesting_mf BINARY SEARCH.
+                    IF sy-subrc <> 0.
+                      READ TABLE lt_coo INTO ls_coo WITH KEY member_firm = ls_gf_item-requesting_mf BINARY SEARCH.
+                      IF sy-subrc <> 0.
+                      ls_screen_head_item_gf_deep-flag = abap_true.
+                      CONCATENATE TEXT-038 TEXT-023 lv_tabix
+                       INTO ls_screen_head_item_gf_deep-message SEPARATED BY space.
+                      EXIT.
+                      ENDIF.
+                    ELSE.
+                      IF ls_gf_item1-loa_email IS INITIAL. "Added for 63809 by MARINAHOTA on 23/12/2020
+                        READ TABLE lt_coo INTO ls_coo WITH KEY member_firm = ls_gf_item-requesting_mf
+                                                               member_firm_d = ls_gf_item-member_firm BINARY SEARCH.
+                          IF sy-subrc = 0.
+                           ls_gf_item1-loa_contact = ls_gf_item-loa_contact = ls_coo-coo_name.
+                           ls_gf_item1-loa_email = ls_gf_item-loa_email = ls_coo-coo_email_id.
+                           ls_gf_item1-landx = ls_gf_item-landx = ls_coo-country.
+                           "+start of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+*                          ELSE.
+*                            ls_screen_head_item_gf_deep-flag = abap_true.
+*                            CONCATENATE TEXT-064 TEXT-023 lv_tabix
+*                             INTO ls_screen_head_item_gf_deep-message SEPARATED BY space.
+*                            EXIT.
+                         "+end of changes for COO table delimeter update || smondal || 22-07-2021 || TR D49K909442
+                          ENDIF.
+                      ENDIF.   "Added for 63809 by MARINAHOTA on 23/12/2020
+                    ENDIF.
+                  ENDIF.
+
+                  "Global CC validation
+                  IF ls_gf_item-global_cc <> 'N/A'.
+                    READ TABLE lt_kostl INTO ls_kostl
+                    WITH KEY kostl = ls_gf_item-global_cc BINARY SEARCH.
+                    IF sy-subrc <> 0.
+                      ls_screen_head_item_gf_deep-flag = abap_true.
+                      CONCATENATE TEXT-039 TEXT-023 lv_tabix
+                       INTO ls_screen_head_item_gf_deep-message SEPARATED BY space.
+                      EXIT.
+*Start of change for defect 63474 Global Functional COO email by MARINAHOTA on 22/12/2020
+                    ELSE.
+                      READ TABLE lt_gf_gpid INTO ls_gf_gpid
+                      WITH KEY kostl = ls_kostl-kostl BINARY SEARCH.
+                      IF sy-subrc = 0.
+                        READ TABLE lt_gf_coo INTO ls_gf_coo
+                        WITH KEY gpid = ls_gf_gpid-gpid BINARY SEARCH.
+                        IF sy-subrc = 0.
+                          IF ls_gf_item1-adl_loa_email IS INITIAL.
+                            CONCATENATE ls_gf_coo-firstname ls_gf_coo-lastname INTO lv_gf_coo SEPARATED BY space.
+                            ls_gf_item1-adl_loa_contact = ls_gf_item-adl_loa_contact = lv_gf_coo.
+                            ls_gf_item1-adl_loa_email = ls_gf_item-adl_loa_email = ls_gf_coo-emailid.
+                          ENDIF.
+                        ENDIF.
+                      ENDIF.
+*End of change for defect 63474 Global Functional COO email by MARINAHOTA on 22/12/2020
+                    ENDIF.
+                  ENDIF.
+*Start of changes for SCTASK1895383 || TR D49K908136 || sukenduk || 05-02-2021
+*                  IF ls_gf_item-last_date_srv IS NOT INITIAL AND ls_gf_item-last_date_srv GT sy-datum.
+*                    ls_screen_head_item_gf_deep-flag = abap_true.
+*                    CONCATENATE TEXT-054 TEXT-023 lv_tabix
+*                     INTO ls_screen_head_item_gf_deep-message SEPARATED BY space.
+*                    EXIT.
+*                  ENDIF.
+*End of changes for SCTASK1895383 || TR D49K908136 || sukenduk || 05-02-2021
+
+*                  IF ls_gf_item-mf_ap_email IS NOT INITIAL.
+*                    lo_matcher = lo_regex->create_matcher( text = ls_gf_item-mf_ap_email ).
+**
+*                    IF lo_matcher->match( ) IS INITIAL.
+*                      ls_screen_head_item_gf_deep-flag = abap_true.
+*                      CONCATENATE TEXT-024 TEXT-023 lv_tabix
+*                      INTO ls_screen_head_item_gf_deep-message SEPARATED BY space.
+*                      EXIT.
+*                    ENDIF.
+*                  ENDIF.
+
+                  IF ls_gf_item-rrf_status IS INITIAL.
+                    ls_gf_item-rrf_status = ls_gf_item1-rrf_status = 'RRF Initiated'.
+                  ENDIF.
+                  IF ls_rrf_item-requesting_mf = 'N/A' AND ls_rrf_item-global_cc = 'N/A'.
+                    CONTINUE.
+                  ENDIF.
+*                  IF ls_gf_item-details_description_of_service IS INITIAL.
+                  ls_gf_item1-details_description_of_service = ls_gf_item-details_description_of_service = ls_screen_head_item_gf_deep-gf_desc.
+*                  ENDIF.
+*                Start of changes for COP and LOA confirm date || smondal || TR D49K909676 || 13-08-2021
+                  READ TABLE lt_cop_date into data(ls_cop_date) with key company_code = ls_screen_gf_item-company_code
+                                                                         rrf_no_gf = ls_screen_gf_item-rrf_no_gf
+                                                                         requesting_mf = ls_screen_gf_item-requesting_mf
+                                                                         global_cc = ls_screen_gf_item-global_cc
+                                                                         process_grp = ls_screen_gf_item-process_grp
+                                                                         MEMBER_FIRM = ls_screen_gf_item-MEMBER_FIRM
+                                                                         CC_SHORT_DESC = ls_screen_gf_item-CC_SHORT_DESC BINARY SEARCH.
+                  IF ls_cop_date-cop_initiate_date is not initial.
+                    ls_gf_item-cop_initiate_date =  ls_cop_date-cop_initiate_date.
+                  ENDIF.
+                  IF ls_cop_date-cop_confirm_date is not initial.
+                    ls_gf_item-cop_confirm_date =  ls_cop_date-cop_confirm_date.
+                  ENDIF.
+*                End of changes for COP and LOA confirm date || smondal || TR D49K909676 || 13-08-2021
+*         Item table getting filled
+                  APPEND: ls_gf_item  TO lt_gf_item,
+                          ls_gf_item1  TO lt_gf_item1,
+                          ls_bill TO lt_bill.
+                  CLEAR:ls_gf_item,ls_gf_item1,ls_screen_gf_item,ls_bill,
+                  ls_cop_date."change for COP and LOA confirm date || smondal || TR D49K909676 || 13-08-2021
+                ENDLOOP.
+
+                IF ls_screen_head_item_gf_deep-flag IS INITIAL."No error
+
+                  "For Non global finance line item
+                  DATA(lt_temp2) = lt_gf_item[].
+                  DATA(lt_temp3) = lt_gf_item[].
+                  DELETE lt_temp2 WHERE requesting_mf = 'N/A'.
+                  DELETE lt_temp3 WHERE requesting_mf = 'N/A'.
+                  SORT lt_temp2 BY requesting_mf process_grp member_firm.
+                  DELETE ADJACENT DUPLICATES FROM lt_temp2 COMPARING requesting_mf process_grp member_firm.
+                  DESCRIBE TABLE lt_temp2 LINES DATA(lv_mf1).
+                  DESCRIBE TABLE lt_temp3 LINES DATA(lv_item1).
+
+                  IF lv_mf1 <> lv_item1."Duplicate Line item checking for non global finance
+                    ls_screen_head_item_gf_deep-flag = abap_true.
+                    ls_screen_head_item_gf_deep-message = TEXT-015.
+                  ENDIF.
+
+                  IF ls_screen_head_item_gf_deep-flag IS INITIAL."No error
+                    "For global finance line item
+                    CLEAR:lv_mf1,lv_item1.
+                    lt_temp2 = lt_gf_item[].
+                    lt_temp3 = lt_gf_item[].
+
+                    DELETE lt_temp2 WHERE requesting_mf <> 'N/A'.
+                    DELETE lt_temp3 WHERE requesting_mf <> 'N/A'.
+                    SORT lt_temp2 BY global_cc cc_short_desc.
+                    DELETE ADJACENT DUPLICATES FROM lt_temp2 COMPARING global_cc cc_short_desc.
+                    DESCRIBE TABLE lt_temp2 LINES lv_mf1.
+                    DESCRIBE TABLE lt_temp3 LINES lv_item1.
+
+                    IF lv_mf1 <> lv_item1."Duplicate Line item checking for Global Finance
+                      ls_screen_head_item_gf_deep-flag = abap_true.
+                      ls_screen_head_item_gf_deep-message = TEXT-017.
+                    ENDIF.
+                    IF ls_screen_head_item_gf_deep-flag IS INITIAL."No error
+                      IF lv_create = abap_false."Populating creation date for Edit/Display
+                        SELECT SINGLE created_on
+                          created_by rrf_creator_name FROM /kgo/fi_gf_rrfh  "Added for defect #63786 by AbhishekB on 10/02/2021
+                          INTO (ls_gf_head-created_on, ls_gf_head-created_by, ls_gf_head-rrf_creator_name)  "Added for defect #63786 by AbhishekB on 10/02/2021
+                          WHERE company_code = ls_gf_head-company_code
+                          AND   rrf_no_gf = ls_gf_head-rrf_no_gf.
+                        IF sy-subrc = 0.
+                          "do nothiong
+                        ENDIF.
+                      ENDIF.
+                      IF lv_amount <> ls_gf_head-total_contract_amount.
+                        ls_gf_head1-total_contract_amount = ls_gf_head-total_contract_amount = lv_amount.
+                      ENDIF.
+                      ls_gf_head1-created_on = ls_gf_head-created_on.
+                      ls_gf_head1-created_by = ls_gf_head-created_by.
+                      ls_gf_head1-rrf_creator_name = ls_gf_head-rrf_creator_name.  "Added for defect #63786 by AbhishekB on 10/02/2021
+                      APPEND ls_gf_head TO lt_gf_head.
+
+*                IF lv_flg IS INITIAL."No error
+                      "Creating billing schedule
+                      IF lv_create = abap_true.
+                        DELETE lt_bill WHERE billing_frequency IS INITIAL.
+                        DELETE lt_bill WHERE amount IS INITIAL.
+                        DELETE lt_bill WHERE amount LT 0.
+                        DELETE lt_bill WHERE start_date IS INITIAL.
+                        LOOP AT lt_bill INTO ls_bill.
+                          lv_date = ls_bill-start_date.
+                          IF ls_bill-amount IS NOT INITIAL AND
+                             ls_bill-billing_frequency IS NOT INITIAL.
+
+                            IF  ls_bill-billing_frequency = 'Onetime'. "For one time billing
+                              ls_billsh-bukrs = ls_bill-company_code.
+                              ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                              ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                              ls_billsh-global_cc = ls_bill-global_cc.
+                              ls_billsh-process_grp = ls_bill-process_grp.
+                              ls_billsh-member_firm = ls_bill-member_firm.
+                              ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                              ls_billsh-req_seq = 1.
+                              ls_billsh-dmbtr = ls_bill-amount.
+                              ls_billsh-sch_date = lv_date.
+                              APPEND ls_billsh TO lt_billsh.
+                              CLEAR:ls_billsh.
+                            ELSE."For other billing frequencies
+                              IF ls_bill-no_of_occur IS NOT INITIAL.
+                                CASE ls_bill-billing_frequency.
+                                  WHEN 'Monthly'. "Monthly
+                                    DO ls_bill-no_of_occur TIMES.
+                                      lv_seq = lv_seq + 1.
+                                      ls_billsh-bukrs = ls_bill-company_code.
+                                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                                      ls_billsh-global_cc = ls_bill-global_cc.
+                                      ls_billsh-process_grp = ls_bill-process_grp.
+                                      ls_billsh-member_firm = ls_bill-member_firm.
+                                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                                      ls_billsh-req_seq = lv_seq.
+                                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                                      IF lv_seq GT 1.
+                                        lv_month = lv_month + 1.
+                                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                                          EXPORTING
+                                            months  = lv_month
+                                            olddate = lv_date
+                                          IMPORTING
+                                            newdate = lv_newdate.
+                                        ls_billsh-sch_date = lv_newdate.
+                                      ELSE.
+                                        ls_billsh-sch_date = lv_date.
+                                      ENDIF.
+
+                                      APPEND ls_billsh TO lt_billsh.
+                                      CLEAR:ls_billsh,lv_newdate.
+                                    ENDDO.
+                                  WHEN 'Quarterly'. "Quarterly
+                                    DO ls_bill-no_of_occur TIMES.
+                                      lv_seq = lv_seq + 1.
+                                      ls_billsh-bukrs = ls_bill-company_code.
+                                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                                      ls_billsh-global_cc = ls_bill-global_cc.
+                                      ls_billsh-process_grp = ls_bill-process_grp.
+                                      ls_billsh-member_firm = ls_bill-member_firm.
+                                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                                      ls_billsh-req_seq = lv_seq.
+                                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                                      IF lv_seq GT 1.
+                                        lv_month = lv_month + 3.
+                                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                                          EXPORTING
+                                            months  = lv_month
+                                            olddate = lv_date
+                                          IMPORTING
+                                            newdate = lv_newdate.
+                                        ls_billsh-sch_date = lv_newdate.
+                                      ELSE.
+                                        ls_billsh-sch_date = lv_date.
+                                      ENDIF.
+
+                                      APPEND ls_billsh TO lt_billsh.
+                                      CLEAR:ls_billsh,lv_newdate.
+                                    ENDDO.
+                                  WHEN 'Halfyearly'. "Half yearly
+                                    DO ls_bill-no_of_occur TIMES.
+                                      lv_seq = lv_seq + 1.
+                                      ls_billsh-bukrs = ls_bill-company_code.
+                                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                                      ls_billsh-global_cc = ls_bill-global_cc.
+                                      ls_billsh-process_grp = ls_bill-process_grp.
+                                      ls_billsh-member_firm = ls_bill-member_firm.
+                                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                                      ls_billsh-req_seq = lv_seq.
+                                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                                      IF lv_seq GT 1.
+                                        lv_month = lv_month + 6.
+                                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                                          EXPORTING
+                                            months  = lv_month
+                                            olddate = lv_date
+                                          IMPORTING
+                                            newdate = lv_newdate.
+                                        ls_billsh-sch_date = lv_newdate.
+                                      ELSE.
+                                        ls_billsh-sch_date = lv_date.
+                                      ENDIF.
+
+                                      APPEND ls_billsh TO lt_billsh.
+                                      CLEAR:ls_billsh,lv_newdate.
+                                    ENDDO.
+                                  WHEN 'Yearly'. "Yearly
+                                    DO ls_bill-no_of_occur TIMES.
+                                      lv_seq = lv_seq + 1.
+                                      ls_billsh-bukrs = ls_bill-company_code.
+                                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                                      ls_billsh-global_cc = ls_bill-global_cc.
+                                      ls_billsh-process_grp = ls_bill-process_grp.
+                                      ls_billsh-member_firm = ls_bill-member_firm.
+                                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                                      ls_billsh-req_seq = lv_seq.
+                                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                                      IF lv_seq GT 1.
+                                        lv_month = lv_month + 12.
+                                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                                          EXPORTING
+                                            months  = lv_month
+                                            olddate = lv_date
+                                          IMPORTING
+                                            newdate = lv_newdate.
+                                        ls_billsh-sch_date = lv_newdate.
+                                      ELSE.
+                                        ls_billsh-sch_date = lv_date.
+                                      ENDIF.
+
+                                      APPEND ls_billsh TO lt_billsh.
+                                      CLEAR:ls_billsh,lv_newdate.
+                                    ENDDO.
+                                ENDCASE.
+                              ENDIF.
+                            ENDIF.
+                          ENDIF.
+                          CLEAR:lv_seq,lv_month,lv_date,ls_bill,lv_newdate.
+                        ENDLOOP.
+
+                        IF lt_billsh[] IS NOT INITIAL.
+                          MODIFY /kgo/fi_gf_bllng FROM TABLE lt_billsh.
+                          IF sy-subrc = 0.
+                            SORT lt_billsh BY bukrs rrf_no_gf requesting_mf global_cc process_grp.
+                            DELETE ADJACENT DUPLICATES FROM lt_billsh COMPARING bukrs
+                             rrf_no_gf requesting_mf global_cc process_grp.
+                            LOOP AT lt_billsh INTO ls_billsh.
+                              CALL METHOD /kgo/fi_ar_utility=>history_update
+                                EXPORTING
+                                  im_rrf    = ls_billsh-rrf_no_gf
+                                  im_mf     = ls_billsh-requesting_mf
+                                  im_pgrp   = ls_billsh-process_grp
+                                  im_cc     = ls_billsh-global_cc
+                                  im_bukrs  = ls_billsh-bukrs
+                                  im_memberfirm = ls_billsh-member_firm
+                                  im_cc_short_desc = ls_billsh-cc_short_desc
+                                  im_action = '024'.
+                            ENDLOOP.
+                          ENDIF.
+                        ENDIF.
+                      ENDIF.
+*                     Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+                        MOVE-CORRESPONDING ls_screen_head_item_gf_deep-RRF_AnswerSet
+                        TO lt_rrf_answer.
+
+                        lt_rrf_answer1 = VALUE #( FOR ls_rrf_answer IN lt_rrf_answer (
+                                                company_code = ls_rrf_answer-company_code
+                                                rrf_no = ls_gf_head-rrf_no_gf
+                                                requesting_mf = ls_rrf_answer-requesting_mf
+                                                global_cc = ls_rrf_answer-global_cc
+                                                process_grp = ls_rrf_answer-process_grp
+                                                MEMBER_FIRM = ls_rrf_answer-MEMBER_FIRM
+                                                CC_SHORT_DESC = ls_rrf_answer-CC_SHORT_DESC
+                                                transaction_type = ls_rrf_answer-transaction_type
+                                                QUESTION = ls_rrf_answer-QUESTION
+                                                BRF_NO = ls_rrf_answer-BRF_NO
+                                                ANSWER = ls_rrf_answer-ANSWER
+                                                ANSWER_DESC = ls_rrf_answer-ANSWER_DESC
+                                                LINE_TYPE = ls_rrf_answer-LINE_TYPE
+                                                USER_ID = sy-uname
+                                                RECORD_DATE = sy-datum
+                                                RECORD_TIME = sy-uzeit
+                                                INTERNAL_EXTERNAL = ls_rrf_answer-INTERNAL_EXTERNAL ) ).
+*                     End of changes for questionnaire || SMONDAL || 3-Mar-2021
+                      IF  lt_gf_head[] IS NOT INITIAL.
+                        MODIFY /kgo/fi_gf_rrfh FROM TABLE lt_gf_head.
+                      ENDIF.
+
+                      IF  lt_gf_item[] IS NOT INITIAL.
+                        MODIFY /kgo/fi_gf_rrfl FROM TABLE lt_gf_item.
+                      ENDIF.
+*                     Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+                      IF lt_rrf_answer1[] IS NOT INITIAL.
+                        MODIFY /kgo/fi_rrf_answ FROM TABLE lt_rrf_answer1.
+                      ENDIF.
+*                     End of changes for questionnaire || SMONDAL || 3-Mar-2021
+                      IF sy-subrc = 0.
+                        COMMIT WORK AND WAIT.
+                        WAIT UP TO 1 SECONDS.
+
+                        IF lv_create = abap_true.
+                          ls_screen_head_item_gf_deep-message = TEXT-008 && ls_gf_head-rrf_no_gf.
+                          CONCATENATE ls_screen_head_item_gf_deep-message TEXT-009 INTO
+                          ls_screen_head_item_gf_deep-message SEPARATED BY space.
+                          ls_screen_head_item_gf_deep-rrf_no_gf = ls_gf_head-rrf_no_gf.
+                          "Update History
+                          LOOP AT lt_gf_item INTO ls_gf_item.
+*Begin Of Changes by ABHISHEKB on 12/02/2021
+                                IF ls_gf_item-global_cc = 'N/A' AND ls_gf_item-long_text IS NOT INITIAL.
+                                CLEAR: lt_lines, lv_name, lt_tlines.
+                                lv_process = ls_gf_item-process_grp.
+                                TRANSLATE lv_process TO UPPER CASE.
+                                CONDENSE ls_gf_item-member_firm.
+                                CONCATENATE  ls_gf_item-rrf_no_gf '_'  "For Line Item longtext
+                                             ls_gf_item-requesting_mf '_'
+                                             lv_process '_'
+                                             ls_gf_item-member_firm
+                                             INTO lv_name.
+                                ENDIF.
+                                lv_str = ls_gf_item-long_text.
+
+                                REPLACE ALL OCCURRENCES OF '|' IN lv_str WITH lc_sep1.
+                                DATA(lt_strings1) = VALUE string_table( ( lv_str ) ).
+
+                                TRY .
+
+                                    CALL FUNCTION 'CONVERT_STREAM_TO_ITF_TEXT'
+                                      EXPORTING
+                                        stream_lines = lt_strings1
+                                        language     = sy-langu
+                                        lf           = 'X'
+                                      TABLES
+                                        itf_text     = lt_lines.
+
+                                  CATCH cx_root.
+                                ENDTRY.
+
+                     IF sy-subrc = 0 AND lt_lines IS NOT INITIAL.
+                        CALL METHOD /kgo/fi_ar_utility=>update_std_text
+                           EXPORTING
+                               im_id         = 'ST'
+                               im_name       = lv_name
+                               im_object     = 'TEXT'
+                               im_lt_tdlines = lt_lines.
+*                          IMPORTING
+*                              ex_flag       = ls_brf_head_item_deep-flag
+*                              ex_ret        = ls_brf_head_item_deep-message.
+
+                        ENDIF.
+                  CLEAR: lt_strings.
+*End of changes by ABHISHEKB on 12/02/2021
+                            CALL METHOD /kgo/fi_ar_utility=>history_update
+                              EXPORTING
+                                im_rrf    = ls_gf_item-rrf_no_gf
+                                im_mf     = ls_gf_item-requesting_mf
+                                im_pgrp   = ls_gf_item-process_grp
+                                im_cc     = ls_gf_item-global_cc
+                                im_bukrs  = ls_gf_item-company_code
+                                im_memberfirm = ls_gf_item-member_firm
+                                im_cc_short_desc = ls_gf_item-cc_short_desc
+                                im_action = '001'.
+                          ENDLOOP.
+                        ELSE.
+                          ls_screen_head_item_gf_deep-message = ls_gf_head-rrf_no_gf.
+                          CONCATENATE ls_screen_head_item_gf_deep-message TEXT-011
+                          INTO ls_screen_head_item_gf_deep-message SEPARATED BY space.
+                          "Update History
+                          LOOP AT lt_gf_item INTO ls_gf_item.
+*Begin Of Changes by ABHISHEKB on 12/02/2021
+                                IF ls_gf_item-global_cc = 'N/A' AND ls_gf_item-long_text IS NOT INITIAL.
+                                CLEAR: lt_lines, lv_name, lt_tlines.
+                                lv_process = ls_gf_item-process_grp.
+                                TRANSLATE lv_process TO UPPER CASE.
+                                CONDENSE ls_gf_item-member_firm.
+                                CONCATENATE  ls_gf_item-rrf_no_gf '_'  "For Line Item longtext
+                                             ls_gf_item-requesting_mf '_'
+                                             lv_process '_'
+                                             ls_gf_item-member_firm
+                                             INTO lv_name.
+                                ENDIF.
+                                lv_str = ls_gf_item-long_text.
+
+                                REPLACE ALL OCCURRENCES OF '|' IN lv_str WITH lc_sep1.
+                                lt_strings1 = VALUE string_table( ( lv_str ) ).
+
+                                TRY .
+
+                                    CALL FUNCTION 'CONVERT_STREAM_TO_ITF_TEXT'
+                                      EXPORTING
+                                        stream_lines = lt_strings1
+                                        language     = sy-langu
+                                        lf           = 'X'
+                                      TABLES
+                                        itf_text     = lt_lines.
+
+                                  CATCH cx_root.
+                                ENDTRY.
+
+                     IF sy-subrc = 0 AND lt_lines IS NOT INITIAL.
+                        CALL METHOD /kgo/fi_ar_utility=>update_std_text
+                           EXPORTING
+                               im_id         = 'ST'
+                               im_name       = lv_name
+                               im_object     = 'TEXT'
+                               im_lt_tdlines = lt_lines.
+*                          IMPORTING
+*                              ex_flag       = ls_brf_head_item_deep-flag
+*                              ex_ret        = ls_brf_head_item_deep-message.
+
+                        ENDIF.
+                  CLEAR: lt_strings.
+*End of changes by ABHISHEKB on 12/02/2021
+                            CALL METHOD /kgo/fi_ar_utility=>history_update
+                              EXPORTING
+                                im_rrf    = ls_gf_item-rrf_no_gf
+                                im_mf     = ls_gf_item-requesting_mf
+                                im_pgrp   = ls_gf_item-process_grp
+                                im_cc     = ls_gf_item-global_cc
+*                               im_brf    =
+*                               ex_message = data(lv_mssg)
+                                im_bukrs  = ls_gf_item-company_code
+                                im_memberfirm = ls_gf_item-member_firm
+                                im_cc_short_desc = ls_gf_item-cc_short_desc
+                                im_action = '002'.
+*                                    im_rid     =
+                          ENDLOOP.
+                        ENDIF.
+                      ENDIF.
+                    ENDIF.
+                  ENDIF.
+                ENDIF.
+              ELSE.
+                ls_screen_head_item_gf_deep-flag = abap_true.
+                ls_screen_head_item_gf_deep-message = TEXT-031.
+              ENDIF.
+            ENDIF.
+
+             "+Begin of addition to prevent concurrent access to RRF on 05.11.2020
+            IF ls_screen_head_item_gf_deep-flag IS INITIAL.
+              "Unlocking RRF
+              CALL METHOD /kgo/fi_ar_utility=>rrf_unlock
+                EXPORTING
+                  im_bukrs       = ls_screen_head_item_gf_deep-company_code
+                  im_rrf         = ls_screen_head_item_gf_deep-rrf_no_gf
+                IMPORTING
+                  ex_unlock_flag = lv_unlock
+                  ex_msg         = lv_unlock_msg.
+
+            ENDIF.
+            "+End of addition to prevent concurrent access to RRF on 05.11.2020
+            " Send the Response back to UI
+            copy_data_to_ref(
+            EXPORTING
+            is_data = ls_screen_head_item_gf_deep
+            CHANGING
+            cr_data = er_deep_entity ).
+
+
+          WHEN 'Cop_HeaderSet'."For CoP Process
+            CONSTANTS:lc_sep TYPE char1 VALUE cl_abap_char_utilities=>newline,
+                      lc_active TYPE char1 VALUE '2'. "Added for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+            DATA:lv_mssg    TYPE string,
+                 lv_loop    TYPE i,
+                 lv_cop     TYPE /kgo/fi_cop_loa,
+                 lv_gf      TYPE /kgo/fi_gf_mf,
+                 lt_cop_loa TYPE /kgo/fi_tt_mf_rrfl,
+                 lv_flag    TYPE /kgo/fi_yn.
+*  Transform complex data from UI screen to into the ABAP structure
+            io_data_provider->read_entry_data(
+            IMPORTING
+            es_data = ls_screen_head_cop ).
+
+            IF ls_screen_head_cop-action = 'COP'.
+              lv_cop = ls_screen_head_cop-action.
+*Start of change by MARINAHOTA on 05/11/2020 for defect 63430
+              SELECT company_code, po_no FROM /kgo/fi_mf_rrfhp
+                INTO TABLE @DATA(lt_po)
+                WHERE company_code = @ls_screen_head_cop-company_code
+                AND rrf_no = @ls_screen_head_cop-rrf_no.
+                IF sy-subrc = 0 AND lt_po IS NOT INITIAL.
+                  SORT lt_po BY company_code po_no.
+                  SELECT vendor FROM /kgo/cou_int_po
+                    INTO TABLE @DATA(lt_po_vendor)
+                    FOR ALL ENTRIES IN @lt_po
+                    WHERE bukrs = @lt_po-company_code
+                    AND po_no = @lt_po-po_no.
+                    IF sy-subrc = 0 AND lt_po_vendor IS NOT INITIAL.
+*                    Start Conversion vendor
+                      CLEAR: lv_vend1. "Added for PO Validation issue on 19/11/2020 by MARINAHOTA
+
+                      LOOP AT lt_po_vendor ASSIGNING FIELD-SYMBOL(<fs_po_vendor>).
+                        CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+                          EXPORTING
+                            input         = <fs_po_vendor>-vendor
+                         IMPORTING
+                           output        = <fs_po_vendor>-vendor.
+
+                      ENDLOOP.
+
+                      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+                         EXPORTING
+                           input         = ls_screen_head_cop-vendor
+                        IMPORTING
+                          output        = lv_vend1.
+*                    End Conversion vendor
+
+                      SORT lt_po_vendor BY vendor.
+                      DELETE ADJACENT DUPLICATES FROM lt_po_vendor COMPARING vendor.
+                      DESCRIBE TABLE lt_po_vendor LINES DATA(lv_po_vend).
+                      IF lv_po_vend GT 1.
+                        ls_screen_head_cop-message = TEXT-057.
+                        ls_screen_head_cop-flag = abap_true.
+                      ELSE.
+                        IF ls_screen_head_cop-vendor IS NOT INITIAL.
+                          READ TABLE lt_po_vendor INTO DATA(lv_po_vendor) INDEX 1.
+                             IF ( lv_po_vendor <> ls_screen_head_cop-vendor ) OR
+                                ( lv_po_vendor <> lv_vend1 ). "Added for PO Validation issue on 19/11/2020 by MARINAHOTA
+                               ls_screen_head_cop-message = TEXT-055.
+                               ls_screen_head_cop-flag = abap_true.
+                             ENDIF.
+                        ENDIF.
+
+                      ENDIF.
+                    ELSE.
+                      ls_screen_head_cop-message = TEXT-056.
+                      ls_screen_head_cop-flag = abap_true.
+                    ENDIF.
+                    CLEAR: lv_po_vend, lv_po_vendor.
+                ENDIF.
+*                Start of changes for questionnaire || smondal || 12-4-2021
+                  DATA(lt_answer_set) = ls_screen_head_cop-COP_AnswSet.
+                  SORT lt_answer_set BY company_code rrf_no requesting_mf global_cc process_grp member_firm
+                                            cc_short_desc answer.
+
+                  SELECT * FROM /KGO/FI_RRF_QUES INTO TABLE @DATA(lt_brf_quest)
+                    FOR ALL ENTRIES IN @ls_screen_head_cop-cop_lineset
+                    WHERE REQUESTING_MF = @ls_screen_head_cop-cop_lineset-REQUESTING_MF
+                    AND MEMBER_FIRM = @ls_screen_head_cop-cop_lineset-MEMBER_FIRM.
+                  IF sy-subrc IS INITIAL.
+                    SORT lt_brf_quest BY company_code requesting_mf member_firm question.
+                    DELETE ADJACENT DUPLICATES FROM lt_brf_quest COMPARING company_code requesting_mf member_firm question.
+                  ENDIF.
+*                End of changes for questionnaire || smondal || 12-04-2021
+*Start of change for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+                  SELECT emailid FROM /kgo/fi_gis_gpid
+                    INTO TABLE @DATA(lt_active)
+                    FOR ALL ENTRIES IN @ls_screen_head_cop-cop_lineset
+                    WHERE emailid = @ls_screen_head_cop-cop_lineset-cop_email_id
+                    AND employeestatuscode = @lc_active.
+                    IF sy-subrc = 0.
+                      SORT lt_active by emailid.
+                      DELETE ADJACENT DUPLICATES FROM lt_active COMPARING ALL FIELDS.
+                    ENDIF.
+
+*End of change for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+              IF ls_screen_head_cop-flag IS INITIAL.
+*End of change by MARINAHOTA on 05/11/2020 for defect 63430
+              LOOP AT ls_screen_head_cop-cop_lineset INTO DATA(ls_lineset).
+                lv_tabix = sy-tabix. "Added for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+                CONDENSE lv_tabix. "Added for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+*               Start of changes for questionnaire || smondal || 12-04-2021
+                IF ls_lineset-global_cc = 'N/A'.
+                  DATA(lv_cc1) = ls_lineset-global_cc.
+                  CLEAR lv_cc1.
+                  READ TABLE lt_brf_quest WITH KEY company_code = ls_screen_head_cop-company_code
+                  requesting_mf = ls_lineset-requesting_mf
+                  member_firm = ls_lineset-member_firm BINARY SEARCH TRANSPORTING NO FIELDS.
+                  IF sy-subrc IS INITIAL.
+                    READ TABLE lt_answer_set WITH KEY company_code = ls_screen_head_cop-company_code
+                    rrf_no = ls_lineset-rrf_no
+                    requesting_mf = ls_lineset-requesting_mf
+                    global_cc = lv_cc1
+                    process_grp = ls_lineset-process_grp
+                    member_firm = ls_lineset-member_firm
+                    cc_short_desc = ls_lineset-cc_short_desc  BINARY SEARCH TRANSPORTING NO FIELDS.
+                    IF sy-subrc <> 0.
+                      ls_screen_head_cop-flag = abap_true.
+                      ls_screen_head_cop-message = TEXT-061.
+                      EXIT.
+                    ELSE.
+                      READ TABLE lt_answer_set WITH KEY company_code = ls_screen_head_cop-company_code
+                      rrf_no = ls_lineset-rrf_no
+                      requesting_mf = ls_lineset-requesting_mf
+                      global_cc = lv_cc1
+                      process_grp = ls_lineset-process_grp
+                      member_firm = ls_lineset-member_firm
+                      cc_short_desc = ls_lineset-cc_short_desc
+                      answer = space BINARY SEARCH TRANSPORTING NO FIELDS.
+                      IF sy-subrc IS INITIAL.
+                        ls_screen_head_cop-flag = abap_true.
+                        ls_screen_head_cop-message = TEXT-061.
+                        EXIT.
+                      ENDIF.
+                    ENDIF.
+                  ENDIF.
+                ENDIF.
+*Start of change for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+                READ TABLE lt_active WITH KEY emailid = ls_lineset-cop_email_id BINARY SEARCH TRANSPORTING NO FIELDS.
+                IF sy-subrc <> 0.
+                  ls_screen_head_cop-flag = abap_true.
+                  IF ls_screen_head_cop-message IS INITIAL.
+                    IF ls_lineset-requesting_mf = 'N/A'.
+                      CONCATENATE TEXT-062 TEXT-052 ls_lineset-global_cc INTO
+                      ls_screen_head_cop-message SEPARATED BY space.
+                    ELSE.
+                      CONCATENATE TEXT-062 TEXT-063 ls_lineset-requesting_mf ls_lineset-member_firm
+                      TEXT-051 ls_lineset-process_grp INTO ls_screen_head_cop-message SEPARATED BY space.
+                    ENDIF.
+                  ELSE.
+                    IF ls_lineset-requesting_mf = 'N/A'.
+                      CONCATENATE TEXT-062 TEXT-052 ls_lineset-global_cc INTO
+                      DATA(lv_act_msg) SEPARATED BY space.
+                    ELSE.
+                      CONCATENATE TEXT-062 TEXT-063 ls_lineset-requesting_mf ls_lineset-member_firm
+                      TEXT-051 ls_lineset-process_grp INTO lv_act_msg SEPARATED BY space.
+                    ENDIF.
+                    CONCATENATE ls_screen_head_cop-message  lc_sep lv_act_msg INTO ls_screen_head_cop-message.
+                  ENDIF.
+                  CONTINUE.
+                ENDIF.
+*End of change for employee status code validation before COP Initiation by MARINAHOTA on 27/05/2021
+*               End of changes for questionnaire || smondal || 12-04-2021
+                IF ls_lineset-global_cc = 'N/A'.
+                  lv_gf = 'MF'.
+                ELSE.
+                  lv_gf = 'GF'.
+                ENDIF.
+                lv_loop = lv_loop + 1.
+                CALL FUNCTION '/KGO/AR_FI_DATA_TO_SNOW'
+                  EXPORTING
+                    im_connect_type       = 'A'
+                    im_rrfnumber          = ls_lineset-rrf_no
+                    im_global_cost_centre = ls_lineset-global_cc
+                    im_memberfirm         = ls_lineset-requesting_mf
+                    im_processinggroup    = ls_lineset-process_grp
+                    im_form_type          = lv_cop
+                    im_gf_mf              = lv_gf
+                    im_supp_manager       = ls_screen_head_cop-vendor_name
+                    im_vendor             = ls_screen_head_cop-vendor
+                    im_loa_contact        = ls_lineset-loa_contact
+                    im_loa_email          = ls_lineset-loa_email
+                    im_adl_contact        = ls_lineset-adl_loa_contact
+                    im_adl_email          = ls_lineset-adl_loa_email
+                    im_currency           = ls_screen_head_cop-currency
+                    im_amount             = ls_lineset-total_comm_amount
+                    im_supp_date          = ls_screen_head_cop-supplier_agreement_date
+                    im_bukrs              = ls_screen_head_cop-company_code
+                    IM_MEMBER_FIRM        = ls_lineset-member_firm
+                    IM_CC_SHORT_DESC      = ls_lineset-cc_short_desc
+             "'9901'"+Added for new company code 9921 changes on 17.08.2020
+                  IMPORTING
+                    ex_message            = lv_mssg
+                    ex_flag               = lv_flag.
+                IF lv_loop = 1 AND ls_screen_head_cop-message IS INITIAL.
+                  ls_screen_head_cop-message = lv_mssg.
+                  IF lv_flag IS NOT INITIAL.
+                    ls_screen_head_cop-flag = lv_flag.
+                  ENDIF.
+                ELSE.
+                  CONCATENATE ls_screen_head_cop-message  lc_sep lv_mssg INTO ls_screen_head_cop-message.
+                  IF lv_flag IS NOT INITIAL.
+                    ls_screen_head_cop-flag = lv_flag.
+                  ENDIF.
+                ENDIF.
+                IF lv_flag IS INITIAL."ls_screen_head_cop-flag IS INITIAL.
+                  "Update History
+                  CALL METHOD /kgo/fi_ar_utility=>history_update
+                    EXPORTING
+                      im_rrf    = ls_lineset-rrf_no
+                      im_mf     = ls_lineset-requesting_mf
+                      im_pgrp   = ls_lineset-process_grp
+                      im_cc     = ls_lineset-global_cc
+                      im_bukrs  = ls_screen_head_cop-company_code "'9901'"+Added for new company code 9921 changes on 17.08.2020
+                      im_memberfirm = ls_lineset-member_firm
+                      im_cc_short_desc = ls_lineset-cc_short_desc
+                      im_action = '007'.
+                ENDIF.
+                CLEAR:lv_mssg,lv_flag,lv_mf.
+              ENDLOOP.
+
+            ENDIF. "Added for defect 63430 by MARINAHOTA on 05/11/2020
+              "Initiate LoA
+            ELSEIF ls_screen_head_cop-action = 'LOA'.
+              lv_cop = ls_screen_head_cop-action.
+*Start of change for validation of RRF_Type by MARINAHOTA on 30/11/2020
+              IF ls_screen_head_cop-company_code = '9921'.
+                IF ls_screen_head_cop-rrf_type IS INITIAL.
+                  ls_screen_head_cop-message = TEXT-058.
+                  ls_screen_head_cop-flag = abap_true.
+                ENDIF.
+              ENDIF.
+*Start of changes for SCTASK1868345 || TR  D49K907905 || smondal || 23-DEC-2020
+              IF ls_screen_head_cop-rrf_no+0(2) EQ 'PO' AND ls_screen_head_cop-supplier_agreement_date IS INITIAL.
+                  ls_screen_head_cop-message = TEXT-059.
+                  ls_screen_head_cop-flag = abap_true.
+              ENDIF.
+*End of changes for SCTASK1868345 || TR  D49K907905 || smondal || 23-DEC-2020
+              IF ls_screen_head_cop-flag IS INITIAL.
+
+*End of change for validation of RRF_Type by MARINAHOTA on 30/11/2020
+              IF NOT ls_screen_head_cop-cop_lineset IS INITIAL.
+                MOVE-CORRESPONDING ls_screen_head_cop-cop_lineset TO lt_cop_loa.
+                CALL FUNCTION '/KGO/AR_FI_DATA_TO_SNOW_LOA'
+                  EXPORTING
+                    im_connect_type  = 'A'
+                    im_form_type     = lv_cop
+                    im_rrfnumber     = ls_screen_head_cop-rrf_no
+                    im_cop_loa_table = lt_cop_loa
+                    im_supp_manager  = ls_screen_head_cop-vendor_name
+                    im_supp_date     = ls_screen_head_cop-supplier_agreement_date
+                    im_vendor        = ls_screen_head_cop-vendor
+                    im_bukrs         = ls_screen_head_cop-company_code "'9901'"+Added for new company code 9921 changes on 17.08.2020
+                  IMPORTING
+                    ex_message       = lv_mssg
+                    ex_flag          = lv_flag.
+                ls_screen_head_cop-flag = lv_flag.
+                ls_screen_head_cop-message = lv_mssg.
+              ELSE.
+                ls_screen_head_cop-message = TEXT-053.
+                ls_screen_head_cop-flag = abap_true.
+              ENDIF.
+              ENDIF. "Added for validation of RRF_Type by MARINAHOTA on 30/11/2020
+            ENDIF.
+
+   "+Begin of addition to prevent concurrent access to RRF on 05.11.2020
+              "Unlocking RRF
+              CALL METHOD /kgo/fi_ar_utility=>rrf_unlock
+                EXPORTING
+                  im_bukrs       = ls_screen_head_cop-company_code
+                  im_rrf         = ls_screen_head_cop-rrf_no
+                IMPORTING
+                  ex_unlock_flag = lv_unlock
+                  ex_msg         = lv_unlock_msg.
+            "+End of addition to prevent concurrent access to RRF on 05.11.2020
+            " Send the Response back to UI
+            copy_data_to_ref(
+            EXPORTING
+            is_data = ls_screen_head_cop
+            CHANGING
+            cr_data = er_deep_entity ).
+
+          WHEN OTHERS.
+        ENDCASE.
+      CATCH /iwbep/cx_mgw_busi_exception .
+      CATCH /iwbep/cx_mgw_tech_exception .
+    ENDTRY.
+  ENDMETHOD.
+
+
+
+
+
+
+
+odata3->gettream
+  METHOD /iwbep/if_mgw_appl_srv_runtime~get_stream.
+    DATA:ls_key_tab       TYPE /iwbep/s_mgw_name_value_pair,
+         lv_bukrs         TYPE bukrs,
+         lv_rrf_no        TYPE /kgo/fi_req_no,
+         lv_cc            TYPE kostl,
+         lv_member_firm	  TYPE /kgo/fi_member_firm,
+         lv_cc_short_desc TYPE /kgo/fi_cc_desc,
+         lv_pgrp          TYPE /kgo/fi_process_grp,
+         lv_mf            TYPE /kgo/fi_mf_gf,
+         lv_cop           TYPE /kgo/fi_cop_loa,
+         lv_filename      TYPE char100,
+         ls_header        TYPE ihttpnvp,
+         lv_file_ext      TYPE w3fileext,
+         ls_stream        TYPE ty_s_media_resource.
+
+    CONSTANTS : lc_content TYPE ihttpnam VALUE 'Content-Disposition',
+                lc_s       TYPE ihttpnam VALUE 'S',
+                lc_e       TYPE ihttpnam VALUE 'E',
+                lc_attfile TYPE ihttpnam VALUE 'attachment; filename="',
+                lc_epos    TYPE ihttpnam VALUE '"'.
+    TRY.
+        "reading company code
+        READ TABLE it_key_tab WITH KEY name = 'CompanyCode' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_bukrs = ls_key_tab-value.
+        ENDIF.
+
+        "reading rrf no
+        READ TABLE it_key_tab WITH KEY name = 'RrfNo' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_rrf_no = ls_key_tab-value.
+        ENDIF.
+
+        "reading requesting mf
+        READ TABLE it_key_tab WITH KEY name = 'RequestingMf' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_mf = ls_key_tab-value.
+        ENDIF.
+
+        "reading global cc
+        READ TABLE it_key_tab WITH KEY name = 'GlobalCc' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_cc = ls_key_tab-value.
+        ENDIF.
+
+        "redaing processing group
+        READ TABLE it_key_tab WITH KEY name = 'ProcessGrp' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_pgrp = ls_key_tab-value.
+          WHILE lv_pgrp CS '*'.
+            lv_pgrp+sy-fdpos(1) = space.
+          ENDWHILE.
+*SOC for special character issue by MARINAHOTA ON 30/06/2021
+
+          WHILE lv_pgrp CS '|'.
+            lv_pgrp+sy-fdpos(1) = '/'.
+          ENDWHILE.
+
+          WHILE lv_pgrp CS '('.
+            lv_pgrp+sy-fdpos(1) = '?'.
+          ENDWHILE.
+
+          WHILE lv_pgrp CS ')'.
+            lv_pgrp+sy-fdpos(1) = '%'.
+          ENDWHILE.
+*EOC for special character issue by MARINAHOTA ON 30/06/2021
+        ENDIF.
+
+        "reading coploa
+        READ TABLE it_key_tab WITH KEY name = 'CopLoa' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_cop = ls_key_tab-value.
+        ENDIF.
+
+        "reading filename
+        READ TABLE it_key_tab WITH KEY name = 'Filename' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_filename = ls_key_tab-value.
+          WHILE lv_filename CS '*'.
+            lv_filename+sy-fdpos(1) = space.
+          ENDWHILE.
+*SOC for special character issue by MARINAHOTA ON 30/06/2021
+
+*          WHILE lv_filename CS '|'.
+*            lv_filename+sy-fdpos(1) = '/'.
+*          ENDWHILE.
+*
+*          WHILE lv_filename CS '('.
+*            lv_filename+sy-fdpos(1) = '?'.
+*          ENDWHILE.
+*
+*          WHILE lv_filename CS ')'.
+*            lv_filename+sy-fdpos(1) = '%'.
+*          ENDWHILE.
+*EOC for special character issue by MARINAHOTA ON 30/06/2021
+        ENDIF.
+
+        "reading member firm
+        READ TABLE it_key_tab WITH KEY name = 'MemberFirm' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_member_firm = ls_key_tab-value.
+          WHILE lv_member_firm CS '*'.
+            lv_member_firm+sy-fdpos(1) = space.
+          ENDWHILE.
+*SOC for special character issue by MARINAHOTA ON 30/06/2021
+
+          WHILE lv_member_firm CS '|'.
+            lv_member_firm+sy-fdpos(1) = '/'.
+          ENDWHILE.
+
+          WHILE lv_member_firm CS '('.
+            lv_member_firm+sy-fdpos(1) = '?'.
+          ENDWHILE.
+
+          WHILE lv_member_firm CS ')'.
+            lv_member_firm+sy-fdpos(1) = '%'.
+          ENDWHILE.
+*EOC for special character issue by MARINAHOTA ON 30/06/2021
+        ENDIF.
+
+        "reading cc description
+        READ TABLE it_key_tab WITH KEY name = 'CcShortDesc' INTO ls_key_tab.
+        IF sy-subrc = 0.
+          lv_cc_short_desc = ls_key_tab-value.
+          WHILE lv_cc_short_desc CS '*'.
+            lv_cc_short_desc+sy-fdpos(1) = space.
+          ENDWHILE.
+        ENDIF.
+
+        IF lv_cc = 'NA'.
+          lv_cc = 'N/A'.
+        ELSE.
+          IF lv_cc IS NOT INITIAL.
+            lv_mf = 'N/A'.
+            CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+              EXPORTING
+                input  = lv_cc
+              IMPORTING
+                output = lv_cc.
+          ENDIF.
+        ENDIF.
+
+        IF lv_cop = 'CON'.
+          lv_mf = 'N/A'.
+          lv_cc = 'N/A'.
+        ENDIF.
+
+        IF iv_entity_set_name = 'AR_ATTSet'.
+
+          SELECT SINGLE * FROM /kgo/fi_mf_att INTO @DATA(ls_att)
+            WHERE company_code = @lv_bukrs
+            AND rrf_no = @lv_rrf_no
+            AND requesting_mf = @lv_mf
+            AND global_cc = @lv_cc
+            AND process_grp = @lv_pgrp
+            AND cop_loa = @lv_cop
+            AND filename = @lv_filename
+            AND member_firm	= @lv_member_firm
+            AND cc_short_desc	= @lv_cc_short_desc.
+          IF sy-subrc = 0.
+            ls_stream-mime_type = ls_att-mimetype.
+            ls_stream-value = ls_att-value.
+          ENDIF.
+
+*  Copydata to reference
+          copy_data_to_ref(
+          EXPORTING is_data = ls_stream
+          CHANGING cr_data = er_stream ).
+
+          ls_header-name = lc_content.
+          CONCATENATE lc_attfile ls_att-filename lc_epos INTO ls_header-value.
+          me->set_header( is_header = ls_header ).
+        ENDIF.
+      CATCH cx_root.
+    ENDTRY.
+  ENDMETHOD.
+
+
+
+
+odata4-
+
+  METHOD /iwbep/if_mgw_appl_srv_runtime~get_expanded_entityset.
+    DATA:BEGIN OF ls_initial_data.
+        INCLUDE TYPE /kgo/cl_fi_ar_recharge_mpc=>ts_rrf_header.
+    DATA: rrf_line_itemset TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_rrf_line_item WITH DEFAULT KEY.
+    DATA: rrf_headerposet TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_rrf_headerpo WITH DEFAULT KEY.
+    DATA: rrf_lineposet TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_rrf_linepo WITH DEFAULT KEY.
+    DATA: ar_attset TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_ar_att WITH DEFAULT KEY.
+*    Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+    DATA: rrf_answerset TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_rrf_answer WITH DEFAULT KEY.
+*    End of changes for questionnaire || SMONDAL || 3-Mar-2021
+    DATA:      END OF ls_initial_data.
+
+    DATA:BEGIN OF ls_gf_data.
+        INCLUDE TYPE /kgo/cl_fi_ar_recharge_mpc=>ts_gf_header.
+    DATA: gf_lineitem_set TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_gf_lineitem WITH DEFAULT KEY.
+*    Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+    DATA: rrf_answerset TYPE  STANDARD TABLE OF
+          /kgo/cl_fi_ar_recharge_mpc=>ts_rrf_answer WITH DEFAULT KEY.
+*    End of changes for questionnaire || SMONDAL || 3-Mar-2021
+    DATA:      END OF ls_gf_data.
+    TYPES:BEGIN OF lty_rrf_itemp,
+            company_code      TYPE  bukrs,
+            rrf_no            TYPE  /kgo/fi_req_no,
+            requesting_mf     TYPE  /kgo/fi_mf_gf,
+            global_cc         TYPE  kostl,
+            process_grp       TYPE  /kgo/fi_process_grp,
+            member_firm       TYPE  /kgo/fi_member_firm,
+            cc_short_desc     TYPE  /kgo/fi_cc_desc,
+            total_comm_amount TYPE wrf_ppw_value_max,
+            total_srv_chrg    TYPE wrf_ppw_value_max,
+          END OF lty_rrf_itemp.
+
+    DATA:lt_initial_data     LIKE TABLE OF ls_initial_data,  "Return table
+         ls_rrf_head         TYPE /kgo/fi_mf_rrfh,
+         lt_rrf_head         TYPE STANDARD TABLE OF /kgo/fi_mf_rrfh,
+         ls_rrf_item         TYPE /kgo/fi_mf_rrfl,
+         ls_rrf_st_item      TYPE /kgo/fi_st_mf_rrfl,
+         ls_rrf_st_poh       TYPE /kgo/fi_st_mf_rrfhp,
+         ls_rrf_st_pol       TYPE /kgo/fi_st_mf_rrflp,
+         lt_gf_data          LIKE TABLE OF ls_gf_data,  "Return table
+         ls_gf_head          TYPE /kgo/fi_gf_rrfh,
+         lt_gf_head          TYPE STANDARD TABLE OF /kgo/fi_gf_rrfh,
+         ls_gf_item          TYPE /kgo/fi_gf_rrfl,
+         ls_gf_st_item       TYPE /kgo/fi_st_gf_rrfl,
+         ls_expanded_clause1 LIKE LINE OF  et_expanded_tech_clauses,
+         lt_rrf_item         TYPE STANDARD TABLE OF /kgo/fi_mf_rrfl,
+         lt_gf_item          TYPE STANDARD TABLE OF /kgo/fi_gf_rrfl,
+         lv_creq_no          TYPE /kgo/fi_creq_no,
+         lv_creq_date        TYPE /kgo/fi_creq_dt,
+         lv_rrf_no           TYPE /kgo/fi_req_no,
+         lv_gf_no            TYPE /kgo/fi_req_no,
+         lv_process          TYPE /kgo/fi_process_grp, "Added by ABHISHEKB for Long Text
+         lv_text             TYPE string, "Added by ABHISHEKB for Long Text
+         lv_name             TYPE  thead-tdname, "Added by ABHISHEKB for Long Text
+         lv_bukrs            TYPE bukrs,
+         lt_po2              TYPE STANDARD TABLE OF lty_rrf_itemp,
+         lt_kostl            TYPE /kgo/fi_tt_costcenter, " Added for 63924 by MARINAHOTA on 23/03/2021 | D49K908722
+         lt_cc1              TYPE RANGE OF kostl, " Added for 63924 by MARINAHOTA on 23/03/2021 | D49K908722
+         lv_cc_msg           TYPE string, "Added for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+         lv_amount           TYPE wrbtr,
+*         Start of changes for questionnaire || smondal || 3-Mar-2021
+         lt_rrf_answ         TYPE STANDARD TABLE OF /kgo/fi_st_rrf_answ,
+         lt_gf_answ          TYPE STANDARD TABLE OF /kgo/fi_st_rrf_answ,
+         lv_index            TYPE i,
+         lv_key1             TYPE char100,
+         lv_key2             TYPE char100.
+*         End of changes for questionnaire || smondal || 3-Mar-2021
+
+    "Processing Entity
+    CASE iv_entity_set_name.
+      WHEN 'RRF_HeaderSet'.
+        IF it_key_tab[] IS NOT INITIAL.
+          READ TABLE it_key_tab INTO DATA(ls_key_tab) WITH KEY name = 'RrfNo'.
+          IF sy-subrc = 0.
+            lv_rrf_no = ls_key_tab-value.
+          ENDIF.
+
+        ELSE.
+          "Reading Quopa requisition date
+          READ TABLE it_filter_select_options INTO DATA(ls_filter)
+          WITH KEY property = 'RrfNo'.
+          IF sy-subrc = 0.
+            DATA(lt_rrf_no) = ls_filter-select_options[].
+            READ TABLE lt_rrf_no INTO DATA(ls_rrf_no) INDEX 1.
+            IF sy-subrc = 0.
+              lv_rrf_no = ls_rrf_no-low.
+            ENDIF.
+          ENDIF.
+
+          READ TABLE it_filter_select_options INTO ls_filter
+              WITH KEY property = 'CompanyCode'.
+          IF sy-subrc = 0.
+            DATA(lt_cc) = ls_filter-select_options[].
+            READ TABLE lt_cc INTO DATA(ls_cc) INDEX 1.
+            IF sy-subrc = 0.
+              DATA(lv_cc) = ls_cc-low.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+
+*Start of change for 63924 by MARINAHOTA on 23/03/2021 | D49K908722
+
+        CALL METHOD /kgo/fi_ar_utility=>get_cost_centers
+          EXPORTING
+            im_uname = sy-uname
+          IMPORTING
+            et_kostl = lt_kostl.
+        IF sy-subrc = 0 AND lt_kostl IS NOT INITIAL.
+          lt_cc1 = VALUE #( FOR ls_kostl1 IN lt_kostl ( sign = 'I' option = 'EQ' low = ls_kostl1-kostl ) ).
+        ENDIF.
+*End of change for 63924 by MARINAHOTA on 23/03/2021 | D49K908722
+
+        IF lv_rrf_no IS NOT INITIAL.
+          "Selecting data from header table
+          SELECT * FROM /kgo/fi_mf_rrfh INTO ls_rrf_head UP TO 1 ROWS
+            WHERE  rrf_no       = lv_rrf_no.
+          ENDSELECT.
+        ENDIF.
+
+        IF sy-subrc = 0.
+          "+Begin of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+          IF lv_cc <> 'D'."In display mode no need to set lock
+            CALL METHOD /kgo/fi_ar_utility=>rrf_lock
+              EXPORTING
+                im_bukrs     = ls_rrf_head-company_code
+                im_rrf       = lv_rrf_no
+              IMPORTING
+                ex_lock_flag = DATA(lv_lock)
+                ex_msg       = DATA(lv_lock_msg).
+          ENDIF.
+*Start of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+          IF ls_rrf_head-kostl NOT IN lt_cc1.
+            DATA(lv_cc_flag) = abap_true.
+            lv_cc_msg = TEXT-060.
+          ENDIF.
+          IF lv_cc_flag = abap_false. "This Costcenter is allowed to the user
+*End of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+            IF lv_lock = abap_false. "RRF is not locked
+              "+End of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+
+              SELECT * FROM /kgo/fi_mf_rrfl INTO TABLE lt_rrf_item
+              WHERE company_code = ls_rrf_head-company_code
+              AND   rrf_no       = ls_rrf_head-rrf_no
+*          AND   coupa_requisition_number = ls_rrf_head-coupa_requisition_number
+              AND   delete_ind = abap_false  "Showing only non delete lines
+              ORDER BY PRIMARY KEY.
+              IF sy-subrc = 0.
+                "Nothing
+              ENDIF.
+
+              "Selecting Header Attachment data
+              SELECT * FROM /kgo/fi_mf_att INTO TABLE @DATA(lt_att)
+                WHERE company_code = @ls_rrf_head-company_code
+                AND   rrf_no       = @ls_rrf_head-rrf_no
+                AND   cop_loa = 'CON'
+                ORDER BY PRIMARY KEY.
+              IF sy-subrc = 0.
+                MOVE-CORRESPONDING lt_att TO ls_initial_data-ar_attset.
+              ENDIF.
+
+
+              "Getting PO header data
+              SELECT * FROM /kgo/fi_mf_rrfhp
+                INTO TABLE @DATA(lt_poh)
+                WHERE company_code = @ls_rrf_head-company_code
+                 AND   rrf_no       = @ls_rrf_head-rrf_no.
+*             AND   coupa_contract_no = @ls_rrf_head-coupa_requisition_number.
+              IF sy-subrc = 0.
+                MOVE-CORRESPONDING lt_poh TO ls_initial_data-rrf_headerposet.
+              ENDIF.
+
+              "Getting PO Line Item data
+              SELECT * FROM /kgo/fi_mf_rrflp
+                INTO TABLE @DATA(lt_pol)
+                WHERE company_code = @ls_rrf_head-company_code
+                AND   rrf_no       = @ls_rrf_head-rrf_no
+                ORDER BY  serial_no,company_code,rrf_no,requesting_mf,global_cc,process_grp,member_firm,
+                cc_short_desc,po_start_date.
+              IF sy-subrc = 0.
+                MOVE-CORRESPONDING lt_pol TO ls_initial_data-rrf_lineposet.
+                "Getting PO Line Item data
+                SELECT company_code,rrf_no,requesting_mf,global_cc,process_grp,
+                  member_firm,cc_short_desc, SUM( po_amount ) AS total_comm_amount, SUM( srv_chrg ) AS total_srv_chrg
+                   FROM /kgo/fi_mf_rrflp
+                  INTO TABLE @lt_po2
+                  WHERE company_code = @ls_rrf_head-company_code
+                  AND   rrf_no       = @ls_rrf_head-rrf_no
+                  GROUP BY  company_code,rrf_no,requesting_mf,global_cc,process_grp,member_firm,
+                  cc_short_desc
+                  ORDER BY  company_code,rrf_no,requesting_mf,global_cc,process_grp,member_firm,
+                  cc_short_desc.
+              ENDIF.
+
+*           Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+              SELECT * FROM /kgo/fi_rrf_answ
+                INTO CORRESPONDING FIELDS OF TABLE lt_rrf_answ
+                WHERE company_code = ls_rrf_head-company_code
+                AND   rrf_no       = ls_rrf_head-rrf_no
+                ORDER BY COMPANY_CODE REQUESTING_MF MEMBER_FIRM PROCESS_GRP TRANSACTION_TYPE INTERNAL_EXTERNAL QUESTION.
+              IF sy-subrc IS INITIAL.
+                LOOP AT lt_rrf_answ ASSIGNING FIELD-SYMBOL(<fs_rrf>).
+                  CONCATENATE <fs_rrf>-requesting_mf <fs_rrf>-member_firm <fs_rrf>-process_grp INTO lv_key1.
+                  IF lv_key1 <> lv_key2.
+                    CLEAR : lv_index.
+                    lv_index = 1.
+                  ENDIF.
+                  <fs_rrf>-line_no = lv_index.
+                  lv_index = lv_index + 1.
+                  CONCATENATE <fs_rrf>-requesting_mf <fs_rrf>-member_firm <fs_rrf>-process_grp INTO lv_key2.
+                ENDLOOP.
+                MOVE-CORRESPONDING lt_rrf_answ TO ls_initial_data-rrf_answerset.
+                CLEAR : lv_index.
+              ENDIF.
+*           End of changes for questionnaire || SMONDAL || 3-Mar-2021
+
+              MOVE-CORRESPONDING ls_rrf_head TO ls_initial_data.
+              "Authority Check object for GP
+              AUTHORITY-CHECK OBJECT '/KGO/COUPA'
+               ID 'ACTVT'  FIELD '02'.
+              IF sy-subrc = 0.
+                ls_initial_data-gp_edit_display = 'E'.
+              ELSE.
+                AUTHORITY-CHECK OBJECT '/KGO/COUPA'
+               ID 'ACTVT'  FIELD '03'.
+                IF sy-subrc = 0.
+                  ls_initial_data-gp_edit_display = 'D'.
+                ENDIF.
+              ENDIF.
+
+              DESCRIBE TABLE lt_rrf_item LINES DATA(lv_lines).
+              IF NOT lt_rrf_item IS INITIAL.
+                DATA(lt_cop) = lt_rrf_item.
+                DATA(lt_loa1) = lt_rrf_item.
+                DELETE lt_cop WHERE rrf_status <> 'COPDeclined' AND rrf_status <> 'RRF Initiated'.
+                DELETE lt_loa1 WHERE rrf_status <> 'COPConfirmed'.
+                DESCRIBE TABLE lt_cop LINES DATA(lv_cop).
+                DESCRIBE TABLE lt_loa1 LINES DATA(lv_loa).
+
+                "CoP Button Activation Based on CoP declined and RRF Initiated status
+                IF lv_cop GE 1.
+                  ls_initial_data-cop_initiate = abap_true.
+                ELSE.
+                  ls_initial_data-cop_initiate = abap_false.
+                ENDIF.
+
+                "LoA Button Activation Based on CoP confirmed status
+                IF lv_loa GE 1.
+                  ls_initial_data-loa_initiate = abap_true.
+                ELSE.
+                  ls_initial_data-loa_initiate = abap_false.
+                ENDIF.
+              ENDIF.
+              LOOP AT lt_rrf_item INTO ls_rrf_item.
+                IF ls_rrf_item-global_cc IS INITIAL.
+                  ls_rrf_item-global_cc  = 'N/A'.
+                ENDIF.
+                MOVE-CORRESPONDING ls_rrf_item TO ls_rrf_st_item.
+*Begin of changes by ABHISHEKB for Long Text on 15/02/2021
+                IF ls_rrf_item-global_cc = 'N/A'.
+                  CLEAR: ls_rrf_st_item-long_text.
+                  lv_process = ls_rrf_item-process_grp.
+                  TRANSLATE lv_process TO UPPER CASE.
+                  CONDENSE ls_rrf_item-member_firm.
+                  CONCATENATE ls_rrf_item-rrf_no '_'
+                                ls_rrf_item-requesting_mf '_'
+                                lv_process '_'
+                                ls_rrf_item-member_firm
+                                INTO lv_name.
+
+                  CALL METHOD /kgo/fi_ar_utility=>read_std_text
+                    EXPORTING
+                      im_id     = 'ST'
+                      im_name   = lv_name
+                      im_object = 'TEXT'
+                    IMPORTING
+                      ex_text   = lv_text.
+
+                  IF sy-subrc = 0 AND lv_text IS NOT INITIAL.
+                    REPLACE ALL OCCURRENCES OF cl_abap_char_utilities=>cr_lf IN lv_text WITH '|'.
+                    REPLACE ALL OCCURRENCES OF cl_abap_char_utilities=>newline IN lv_text WITH '|'.
+
+                    ls_rrf_st_item-long_text = lv_text.
+
+                  ENDIF.
+                ENDIF.
+*End of changes by ABHISHEKB for Long Text on 15/02/2021
+                ls_rrf_st_item-edit_req_mf = abap_true.
+                IF ls_rrf_item-rrf_status <> 'COPDeclined' AND ls_rrf_item-rrf_status <> 'RRF Initiated'.
+                  ls_rrf_st_item-cop_initiate = abap_true.
+                ELSE.
+                  CLEAR ls_rrf_st_item-cop_initiate.
+                ENDIF.
+                IF ls_rrf_item-requesting_mf = 'N/A'.
+                  CLEAR ls_rrf_item-requesting_mf.
+                ENDIF.
+                IF ls_rrf_item-global_cc = 'N/A'.
+                  CLEAR ls_rrf_item-global_cc.
+                ENDIF.
+                READ TABLE lt_po2 INTO DATA(ls_po2) WITH KEY company_code = ls_rrf_st_item-company_code rrf_no = ls_rrf_st_item-rrf_no
+                 requesting_mf = ls_rrf_item-requesting_mf global_cc = ls_rrf_item-global_cc
+                 process_grp = ls_rrf_st_item-process_grp member_firm = ls_rrf_item-member_firm
+                 cc_short_desc = ls_rrf_item-cc_short_desc BINARY SEARCH.
+                IF sy-subrc = 0.
+                  ls_rrf_st_item-total_comm_amount = ls_po2-total_comm_amount + ls_po2-total_srv_chrg.
+                ENDIF.
+
+                APPEND ls_rrf_st_item TO ls_initial_data-rrf_line_itemset.
+                CLEAR:ls_rrf_st_item.
+              ENDLOOP.
+
+              APPEND ls_initial_data TO lt_initial_data.
+              "+Begin of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+            ELSE."RRF is locked
+              ls_initial_data-message = lv_lock_msg.
+              ls_initial_data-flag = lv_lock.
+              APPEND ls_initial_data TO lt_initial_data.
+            ENDIF.
+*Start of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+          ELSE. "This Costcenter is not allowed to the user
+            ls_initial_data-message = lv_cc_msg.
+            ls_initial_data-flag = lv_cc_flag.
+            APPEND ls_initial_data TO lt_initial_data.
+          ENDIF.
+*End of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+          "+End of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+*————————————————————————--------------------------------------------------------*
+
+*             Assign the Navigation Proprties name to Expanded Tech clauses
+
+*————————————————————————--------------------------------------------------------*
+
+          ls_expanded_clause1  = 'RRF_Line_itemset'.
+
+          APPEND ls_expanded_clause1 TO et_expanded_tech_clauses.
+
+*————————————————————————--------------------------------------------------------*
+
+*             Send back Response to Consumer
+
+*————————————————————————--------------------------------------------------------*
+
+          copy_data_to_ref(
+            EXPORTING
+              is_data = lt_initial_data
+            CHANGING
+              cr_data = er_entityset ).
+        ENDIF.
+
+      WHEN 'GF_HeaderSet'."For Non coupa RRF
+        IF it_key_tab[] IS NOT INITIAL.
+
+          READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'RrfNoGf'.
+          IF sy-subrc = 0.
+            lv_gf_no = ls_key_tab-value.
+          ENDIF.
+        ELSE.
+          "Reading Quopa requisition date
+          READ TABLE it_filter_select_options INTO ls_filter
+          WITH KEY property = 'RrfNoGf'.
+          IF sy-subrc = 0.
+            DATA(lt_gf_no) = ls_filter-select_options[].
+            READ TABLE lt_gf_no INTO DATA(ls_gf_no) INDEX 1.
+            IF sy-subrc = 0.
+              lv_gf_no = ls_gf_no-low.
+            ENDIF.
+          ENDIF.
+
+          READ TABLE it_filter_select_options INTO ls_filter
+              WITH KEY property = 'CompanyCode'.
+          IF sy-subrc = 0.
+            lt_cc = ls_filter-select_options[].
+            READ TABLE lt_cc INTO ls_cc INDEX 1.
+            IF sy-subrc = 0.
+              lv_cc = ls_cc-low.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+
+*Start of change for 63924 by MARINAHOTA on 23/03/2021 | D49K908722
+
+        CALL METHOD /kgo/fi_ar_utility=>get_cost_centers
+          EXPORTING
+            im_uname = sy-uname
+          IMPORTING
+            et_kostl = lt_kostl.
+        IF sy-subrc = 0 AND lt_kostl IS NOT INITIAL.
+          lt_cc1 = VALUE #( FOR ls_kostl1 IN lt_kostl ( sign = 'I' option = 'EQ' low = ls_kostl1-kostl ) ).
+        ENDIF.
+*End of change for 63924 by MARINAHOTA on 23/03/2021 | D49K908722
+
+        IF lv_gf_no IS NOT INITIAL.
+          "Selecting data from header table
+          SELECT * FROM /kgo/fi_gf_rrfh INTO ls_gf_head UP TO 1 ROWS
+            WHERE  rrf_no_gf = lv_gf_no.
+          ENDSELECT.
+        ENDIF.
+        IF sy-subrc = 0.
+          "+Begin of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+          IF lv_cc <> 'D'. "In display mode no need to set lock
+            CALL METHOD /kgo/fi_ar_utility=>rrf_lock
+              EXPORTING
+                im_bukrs     = ls_gf_head-company_code
+                im_rrf       = lv_gf_no
+              IMPORTING
+                ex_lock_flag = lv_lock
+                ex_msg       = lv_lock_msg.
+          ENDIF.
+
+*Start of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+          IF ls_gf_head-kostl NOT IN lt_cc1.
+            lv_cc_flag = abap_true.
+            lv_cc_msg = TEXT-060.
+          ENDIF.
+          IF lv_cc_flag = abap_false. "This Costcenter is allowed to the user
+*End of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+
+            IF lv_lock = abap_false. "RRF is not locked
+              "+End of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+
+              "Getting Item data based on header data
+              SELECT * FROM /kgo/fi_gf_rrfl INTO TABLE lt_gf_item
+              WHERE company_code = ls_gf_head-company_code
+              AND   rrf_no_gf       = ls_gf_head-rrf_no_gf
+              AND   delete_ind = abap_false  "Showing only non delete lines
+              ORDER BY PRIMARY KEY.
+              IF sy-subrc = 0.
+                "Nothing
+              ENDIF.
+              MOVE-CORRESPONDING ls_gf_head TO ls_gf_data.
+              "Authority Check object for GF
+              AUTHORITY-CHECK OBJECT '/KGO/N_COU'
+               ID 'ACTVT'  FIELD '02'.
+              IF sy-subrc = 0.
+                ls_gf_data-gf_edit_display = 'E'.
+              ELSE.
+                AUTHORITY-CHECK OBJECT '/KGO/N_COU'
+               ID 'ACTVT'  FIELD '03'.
+                IF sy-subrc = 0.
+                  ls_gf_data-gf_edit_display = 'D'.
+                ENDIF.
+              ENDIF.
+
+              "Getting bill schedule data
+              SELECT * FROM /kgo/fi_gf_bllng INTO TABLE @DATA(lt_bill)
+                WHERE bukrs   = @ls_gf_head-company_code
+                AND rrf_no_gf = @ls_gf_head-rrf_no_gf
+                ORDER BY bukrs, rrf_no_gf ,requesting_mf,global_cc,process_grp,member_firm,
+                cc_short_desc.
+              IF sy-subrc = 0.
+              ENDIF.
+              DESCRIBE TABLE lt_gf_item LINES lv_lines.
+              IF NOT lt_gf_item IS INITIAL.
+                DATA(lt_cop1) = lt_gf_item.
+                DATA(lt_loa) = lt_gf_item.
+                DELETE lt_cop1 WHERE rrf_status <> 'COPDeclined' AND rrf_status <> 'RRF Initiated'.
+                DELETE lt_loa WHERE  rrf_status <> 'COPConfirmed'.
+                DESCRIBE TABLE lt_cop1 LINES lv_cop.
+                DESCRIBE TABLE lt_loa LINES lv_loa.
+*            IF lv_cop = lv_lines. "COP initiated for all line items now disable initiate cop button and enable initiate loa button
+*              ls_gf_data-cop_initiate = abap_false.
+*              ls_gf_data-loa_initiate = abap_true.
+*            ELSE.
+*              ls_gf_data-cop_initiate = abap_true.
+*              ls_gf_data-loa_initiate = abap_false.
+*            ENDIF.
+                "CoP Button Activation Based on CoP declined and RRF Initiated status
+                IF lv_cop GE 1.
+                  ls_gf_data-cop_initiate = abap_true.
+                ELSE.
+                  ls_gf_data-cop_initiate = abap_false.
+                ENDIF.
+
+                "LoA Button Activation Based on CoP confirmed status
+                IF lv_loa GE 1.
+                  ls_gf_data-loa_initiate = abap_true.
+                ELSE.
+                  ls_gf_data-loa_initiate = abap_false.
+                ENDIF.
+              ENDIF.
+
+              "Populating Item data
+              LOOP AT lt_gf_item INTO ls_gf_item.
+
+                MOVE-CORRESPONDING ls_gf_item TO ls_gf_st_item.
+*Begin of changes by ABHISHEKB for Long Text on 15/02/2021
+                IF ls_gf_item-global_cc = 'N/A'.
+                  CLEAR: ls_gf_st_item-long_text.
+                  lv_process = ls_gf_item-process_grp.
+                  TRANSLATE lv_process TO UPPER CASE.
+                  CONDENSE ls_gf_item-member_firm.
+                  CONCATENATE ls_gf_item-rrf_no_gf '_'
+                                ls_gf_item-requesting_mf '_'
+                                lv_process '_'
+                                ls_gf_item-member_firm
+                                INTO lv_name.
+
+                  CALL METHOD /kgo/fi_ar_utility=>read_std_text
+                    EXPORTING
+                      im_id     = 'ST'
+                      im_name   = lv_name
+                      im_object = 'TEXT'
+                    IMPORTING
+                      ex_text   = lv_text.
+
+                  IF sy-subrc = 0 AND lv_text IS NOT INITIAL.
+                    REPLACE ALL OCCURRENCES OF cl_abap_char_utilities=>cr_lf IN lv_text WITH '|'.
+                    REPLACE ALL OCCURRENCES OF cl_abap_char_utilities=>newline IN lv_text WITH '|'.
+
+                    ls_gf_st_item-long_text = lv_text.
+                  ENDIF.
+                ENDIF.
+*End of changes by ABHISHEKB for Long Text on 15/02/2021
+                "Getting total amount for non deleted items
+                lv_amount = lv_amount + ls_gf_item-amount.
+                "Reading bill schedule data for line items
+                READ TABLE lt_bill INTO DATA(ls_bill) WITH KEY bukrs = ls_gf_item-company_code
+                                                             rrf_no_gf = ls_gf_item-rrf_no_gf
+                                                             requesting_mf = ls_gf_item-requesting_mf
+                                                             global_cc = ls_gf_item-global_cc
+                                                             process_grp = ls_gf_item-process_grp
+                                                             member_firm = ls_gf_item-member_firm
+                                                             cc_short_desc = ls_gf_item-cc_short_desc
+                                                             BINARY SEARCH.
+                IF sy-subrc = 0.
+                  ls_gf_st_item-bill_schedule = abap_true. "Bill schedule exists
+                ENDIF.
+
+                IF ls_gf_item-rrf_status <> 'COPDeclined' AND ls_gf_item-rrf_status <> 'RRF Initiated'.
+                  ls_gf_st_item-cop_initiate = abap_true.
+                ELSE.
+                  CLEAR ls_gf_st_item-cop_initiate.
+                ENDIF.
+
+                ls_gf_st_item-edit_req_mf = abap_true.
+                APPEND ls_gf_st_item TO ls_gf_data-gf_lineitem_set.
+                CLEAR:ls_gf_st_item.
+              ENDLOOP.
+              ls_gf_data-total_contract_amount = lv_amount.
+
+*           Start of changes for questionnaire || SMONDAL || 3-Mar-2021
+              IF ls_gf_item IS NOT INITIAL.
+                SELECT * FROM /kgo/fi_rrf_answ
+                INTO CORRESPONDING FIELDS OF TABLE lt_gf_answ
+                WHERE company_code = ls_gf_head-company_code
+                AND   rrf_no       = ls_gf_head-rrf_no_gf
+                ORDER BY COMPANY_CODE REQUESTING_MF MEMBER_FIRM PROCESS_GRP TRANSACTION_TYPE INTERNAL_EXTERNAL QUESTION.
+                IF sy-subrc IS INITIAL.
+                  LOOP AT lt_gf_answ ASSIGNING FIELD-SYMBOL(<fs_gf>).
+                    CONCATENATE <fs_gf>-requesting_mf <fs_gf>-member_firm <fs_gf>-process_grp INTO lv_key1.
+                    IF lv_key1 <> lv_key2.
+                      CLEAR : lv_index.
+                      lv_index = 1.
+                    ENDIF.
+
+                    <fs_gf>-line_no = lv_index.
+                    lv_index = lv_index + 1.
+                    CONCATENATE <fs_gf>-requesting_mf <fs_gf>-member_firm <fs_gf>-process_grp INTO lv_key2.
+                  ENDLOOP.
+                  MOVE-CORRESPONDING lt_gf_answ TO ls_gf_data-rrf_answerset.
+                  CLEAR : lv_index.
+                ENDIF.
+              ENDIF.
+*           End of changes for questionnaire || SMONDAL || 3-Mar-2021
+              APPEND ls_gf_data TO lt_gf_data.
+
+              "Updating header table with the amount
+              IF ls_gf_head-total_contract_amount <> lv_amount.
+                ls_gf_head-total_contract_amount = lv_amount.
+                UPDATE /kgo/fi_gf_rrfh SET total_contract_amount = ls_gf_head-total_contract_amount
+                WHERE company_code = ls_gf_head-company_code
+                AND   rrf_no_gf    = ls_gf_head-rrf_no_gf.
+                IF sy-subrc = 0.
+                  COMMIT WORK AND WAIT.
+                ENDIF.
+              ENDIF.
+
+              "+Begin of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+            ELSE."RRF is locked
+              ls_gf_data-message = lv_lock_msg.
+              ls_gf_data-flag = lv_lock.
+              APPEND ls_gf_data TO lt_gf_data.
+            ENDIF.
+            "+End of addition for RRF  Locking to prevent against concurrent access on 05.11.2020
+*Start of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+          ELSE. "This Costcenter is not allowed to the user
+            ls_initial_data-message = lv_cc_msg.
+            ls_initial_data-flag = lv_cc_flag.
+            APPEND ls_initial_data TO lt_initial_data.
+          ENDIF.
+*End of change for 63924 by MARINAHOTA on 25/03/2021 | D49K908746
+
+*————————————————————————----------------------------------------------------*
+
+*             Assign the Navigation Proprties name to Expanded Tech clauses
+
+*————————————————————————----------------------------------------------------*
+
+          ls_expanded_clause1  = 'GF_Lineitem_Set'.
+
+          APPEND ls_expanded_clause1 TO et_expanded_tech_clauses.
+
+*————————————————————————------------------------------------------------*
+
+*             Send back Response to Consumer
+
+*————————————————————————------------------------------------------------*
+
+          copy_data_to_ref(
+            EXPORTING
+              is_data = lt_gf_data
+            CHANGING
+              cr_data = er_entityset ).
+
+        ENDIF.
+    ENDCASE.
+  ENDMETHOD.
+
+
+
+
+
+odata -create entity
+
+  METHOD gf_billshset_create_entity.
+    DATA:ls_bill               TYPE /kgo/fi_gf_bill_sh,
+         ls_billsh             TYPE /kgo/fi_gf_bllng,
+         lt_billsh             TYPE STANDARD TABLE OF /kgo/fi_gf_bllng,
+         lv_seq                TYPE i,
+         lv_month              TYPE i,
+         lv_date               TYPE sy-datum,
+         lv_newdate            TYPE sy-datum,
+         ls_request_input_data TYPE /kgo/cl_fi_ar_recharge_mpc=>ts_gf_billsh.
+
+    "Read Request Data
+    io_data_provider->read_entry_data( IMPORTING es_data = ls_request_input_data ).
+    MOVE-CORRESPONDING ls_request_input_data TO ls_bill.
+    lv_date = ls_request_input_data-start_date.
+    IF  ls_bill-company_code IS NOT INITIAL AND
+       ls_bill-rrf_no_gf IS NOT INITIAL AND
+       ls_bill-amount IS NOT INITIAL AND
+       lv_date        IS NOT INITIAL AND
+       ls_bill-billing_frequency IS NOT INITIAL.
+
+      IF ls_bill-amount GT 0 . "Negetive amount check
+
+        SELECT * FROM /kgo/fi_gf_bllng UP TO 1 ROWS INTO @DATA(ls_sche)
+          WHERE bukrs = @ls_bill-company_code
+          AND rrf_no_gf = @ls_bill-rrf_no_gf
+          AND requesting_mf = @ls_bill-requesting_mf
+          AND global_cc = @ls_bill-global_cc
+          AND process_grp = @ls_bill-process_grp
+          AND member_firm = @ls_bill-member_firm
+          AND cc_short_desc = @ls_bill-cc_short_desc.
+        ENDSELECT.
+        IF sy-subrc <> 0. "No bill schedule exists for this data
+
+          IF  ls_bill-billing_frequency = 'Onetime'. "For one time billing
+            ls_billsh-bukrs = ls_bill-company_code.
+            ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+            ls_billsh-requesting_mf = ls_bill-requesting_mf.
+            ls_billsh-global_cc = ls_bill-global_cc.
+            ls_billsh-process_grp = ls_bill-process_grp.
+            ls_billsh-member_firm = ls_bill-member_firm.
+            ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+            ls_billsh-req_seq = 1.
+            ls_billsh-dmbtr = ls_bill-amount.
+            ls_billsh-sch_date = lv_date.
+            APPEND ls_billsh TO lt_billsh.
+            CLEAR:ls_billsh.
+          ELSE."For other billing frequencies
+            IF ls_bill-no_of_occur IS NOT INITIAL.
+              CASE ls_bill-billing_frequency.
+                WHEN 'Monthly'. "Monthly
+                  DO ls_bill-no_of_occur TIMES.
+                    lv_seq = lv_seq + 1.
+                    ls_billsh-bukrs = ls_bill-company_code.
+                    ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                    ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                    ls_billsh-global_cc = ls_bill-global_cc.
+                    ls_billsh-process_grp = ls_bill-process_grp.
+                    ls_billsh-member_firm = ls_bill-member_firm.
+                    ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                    ls_billsh-req_seq = lv_seq.
+                    ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                    IF lv_seq GT 1.
+                      lv_month = lv_month + 1.
+                      CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                        EXPORTING
+                          months  = lv_month
+                          olddate = lv_date
+                        IMPORTING
+                          newdate = lv_newdate.
+                      ls_billsh-sch_date = lv_newdate.
+                    ELSE.
+                      ls_billsh-sch_date = lv_date.
+                    ENDIF.
+
+                    APPEND ls_billsh TO lt_billsh.
+                    CLEAR:ls_billsh,lv_newdate.
+                  ENDDO.
+                WHEN 'Quarterly'. "Quarterly
+                  DO ls_bill-no_of_occur TIMES.
+                    lv_seq = lv_seq + 1.
+                    ls_billsh-bukrs = ls_bill-company_code.
+                    ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                    ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                    ls_billsh-global_cc = ls_bill-global_cc.
+                    ls_billsh-process_grp = ls_bill-process_grp.
+                    ls_billsh-member_firm = ls_bill-member_firm.
+                    ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                    ls_billsh-req_seq = lv_seq.
+                    ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                    IF lv_seq GT 1.
+                      lv_month = lv_month + 3.
+                      CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                        EXPORTING
+                          months  = lv_month
+                          olddate = lv_date
+                        IMPORTING
+                          newdate = lv_newdate.
+                      ls_billsh-sch_date = lv_newdate.
+                    ELSE.
+                      ls_billsh-sch_date = lv_date.
+                    ENDIF.
+
+                    APPEND ls_billsh TO lt_billsh.
+                    CLEAR:ls_billsh,lv_newdate.
+                  ENDDO.
+                WHEN 'Halfyearly'. "Half Yearly
+                  DO ls_bill-no_of_occur TIMES.
+                    lv_seq = lv_seq + 1.
+                    ls_billsh-bukrs = ls_bill-company_code.
+                    ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                    ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                    ls_billsh-global_cc = ls_bill-global_cc.
+                    ls_billsh-process_grp = ls_bill-process_grp.
+                    ls_billsh-member_firm = ls_bill-member_firm.
+                    ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                    ls_billsh-req_seq = lv_seq.
+                    ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                    IF lv_seq GT 1.
+                      lv_month = lv_month + 6.
+                      CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                        EXPORTING
+                          months  = lv_month
+                          olddate = lv_date
+                        IMPORTING
+                          newdate = lv_newdate.
+                      ls_billsh-sch_date = lv_newdate.
+                    ELSE.
+                      ls_billsh-sch_date = lv_date.
+                    ENDIF.
+
+                    APPEND ls_billsh TO lt_billsh.
+                    CLEAR:ls_billsh,lv_newdate.
+                  ENDDO.
+                WHEN 'Yearly'. "Yearly
+                  DO ls_bill-no_of_occur TIMES.
+                    lv_seq = lv_seq + 1.
+                    ls_billsh-bukrs = ls_bill-company_code.
+                    ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                    ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                    ls_billsh-global_cc = ls_bill-global_cc.
+                    ls_billsh-process_grp = ls_bill-process_grp.
+                    ls_billsh-member_firm = ls_bill-member_firm.
+                    ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                    ls_billsh-req_seq = lv_seq.
+                    ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                    IF lv_seq GT 1.
+                      lv_month = lv_month + 12.
+                      CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                        EXPORTING
+                          months  = lv_month
+                          olddate = lv_date
+                        IMPORTING
+                          newdate = lv_newdate.
+                      ls_billsh-sch_date = lv_newdate.
+                    ELSE.
+                      ls_billsh-sch_date = lv_date.
+                    ENDIF.
+
+                    APPEND ls_billsh TO lt_billsh.
+                    CLEAR:ls_billsh,lv_newdate.
+                  ENDDO.
+              ENDCASE.
+            ELSE.
+              ls_request_input_data-flag = abap_true.
+              IF ls_bill-global_cc = 'N/A'.
+                ls_request_input_data-message = TEXT-028.
+              ELSE.
+                ls_request_input_data-message = TEXT-044.
+              ENDIF.
+            ENDIF.
+          ENDIF.
+        ELSE."Bill schedule already exists
+          SELECT requesting_mf FROM /kgo/fi_gf_rrfl UP TO 1 ROWS INTO @DATA(ls_gfl)
+           WHERE company_code = @ls_bill-company_code
+           AND rrf_no_gf = @ls_bill-rrf_no_gf
+           AND requesting_mf = @ls_bill-requesting_mf
+           AND global_cc = @ls_bill-global_cc
+           AND process_grp = @ls_bill-process_grp
+           AND member_firm = @ls_bill-member_firm
+           AND cc_short_desc = @ls_bill-cc_short_desc.
+          ENDSELECT.
+          IF sy-subrc <> 0. "No line item exists for this data
+            IF  ls_bill-billing_frequency = 'Onetime'. "For one time billing
+              ls_billsh-bukrs = ls_bill-company_code.
+              ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+              ls_billsh-requesting_mf = ls_bill-requesting_mf.
+              ls_billsh-global_cc = ls_bill-global_cc.
+              ls_billsh-process_grp = ls_bill-process_grp.
+              ls_billsh-member_firm = ls_bill-member_firm.
+              ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+              ls_billsh-req_seq = 1.
+              ls_billsh-dmbtr = ls_bill-amount.
+              ls_billsh-sch_date = lv_date.
+              APPEND ls_billsh TO lt_billsh.
+              CLEAR:ls_billsh.
+            ELSE."For other billing frequencies
+              IF ls_bill-no_of_occur IS NOT INITIAL.
+                CASE ls_bill-billing_frequency.
+                  WHEN 'Monthly'. "Monthly
+                    DO ls_bill-no_of_occur TIMES.
+                      lv_seq = lv_seq + 1.
+                      ls_billsh-bukrs = ls_bill-company_code.
+                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                      ls_billsh-global_cc = ls_bill-global_cc.
+                      ls_billsh-process_grp = ls_bill-process_grp.
+                      ls_billsh-member_firm = ls_bill-member_firm.
+                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                      ls_billsh-req_seq = lv_seq.
+                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                      IF lv_seq GT 1.
+                        lv_month = lv_month + 1.
+                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                          EXPORTING
+                            months  = lv_month
+                            olddate = lv_date
+                          IMPORTING
+                            newdate = lv_newdate.
+                        ls_billsh-sch_date = lv_newdate.
+                      ELSE.
+                        ls_billsh-sch_date = lv_date.
+                      ENDIF.
+
+                      APPEND ls_billsh TO lt_billsh.
+                      CLEAR:ls_billsh,lv_newdate.
+                    ENDDO.
+                  WHEN 'Quarterly'. "Querterly
+                    DO ls_bill-no_of_occur TIMES.
+                      lv_seq = lv_seq + 1.
+                      ls_billsh-bukrs = ls_bill-company_code.
+                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                      ls_billsh-global_cc = ls_bill-global_cc.
+                      ls_billsh-process_grp = ls_bill-process_grp.
+                      ls_billsh-member_firm = ls_bill-member_firm.
+                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                      ls_billsh-req_seq = lv_seq.
+                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                      IF lv_seq GT 1.
+                        lv_month = lv_month + 3.
+                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                          EXPORTING
+                            months  = lv_month
+                            olddate = lv_date
+                          IMPORTING
+                            newdate = lv_newdate.
+                        ls_billsh-sch_date = lv_newdate.
+                      ELSE.
+                        ls_billsh-sch_date = lv_date.
+                      ENDIF.
+
+                      APPEND ls_billsh TO lt_billsh.
+                      CLEAR:ls_billsh,lv_newdate.
+                    ENDDO.
+                  WHEN 'Halfyearly'. "Half Yearly
+                    DO ls_bill-no_of_occur TIMES.
+                      lv_seq = lv_seq + 1.
+                      ls_billsh-bukrs = ls_bill-company_code.
+                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                      ls_billsh-global_cc = ls_bill-global_cc.
+                      ls_billsh-process_grp = ls_bill-process_grp.
+                      ls_billsh-member_firm = ls_bill-member_firm.
+                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                      ls_billsh-req_seq = lv_seq.
+                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                      IF lv_seq GT 1.
+                        lv_month = lv_month + 6.
+                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                          EXPORTING
+                            months  = lv_month
+                            olddate = lv_date
+                          IMPORTING
+                            newdate = lv_newdate.
+                        ls_billsh-sch_date = lv_newdate.
+                      ELSE.
+                        ls_billsh-sch_date = lv_date.
+                      ENDIF.
+
+                      APPEND ls_billsh TO lt_billsh.
+                      CLEAR:ls_billsh,lv_newdate.
+                    ENDDO.
+                  WHEN 'Yearly'. "Yearly
+                    DO ls_bill-no_of_occur TIMES.
+                      lv_seq = lv_seq + 1.
+                      ls_billsh-bukrs = ls_bill-company_code.
+                      ls_billsh-rrf_no_gf = ls_bill-rrf_no_gf.
+                      ls_billsh-requesting_mf = ls_bill-requesting_mf.
+                      ls_billsh-global_cc = ls_bill-global_cc.
+                      ls_billsh-process_grp = ls_bill-process_grp.
+                      ls_billsh-member_firm = ls_bill-member_firm.
+                      ls_billsh-cc_short_desc = ls_bill-cc_short_desc.
+                      ls_billsh-req_seq = lv_seq.
+                      ls_billsh-dmbtr = ls_bill-amount / ls_bill-no_of_occur.
+                      IF lv_seq GT 1.
+                        lv_month = lv_month + 12.
+                        CALL FUNCTION 'MONTH_PLUS_DETERMINE'
+                          EXPORTING
+                            months  = lv_month
+                            olddate = lv_date
+                          IMPORTING
+                            newdate = lv_newdate.
+                        ls_billsh-sch_date = lv_newdate.
+                      ELSE.
+                        ls_billsh-sch_date = lv_date.
+                      ENDIF.
+
+                      APPEND ls_billsh TO lt_billsh.
+                      CLEAR:ls_billsh,lv_newdate.
+                    ENDDO.
+                ENDCASE.
+              ELSE.
+                ls_request_input_data-flag = abap_true.
+                IF ls_bill-global_cc = 'N/A'.
+                  ls_request_input_data-message = TEXT-028.
+                ELSE.
+                  ls_request_input_data-message = TEXT-044.
+                ENDIF.
+              ENDIF.
+            ENDIF.
+          ELSE.
+            IF ls_bill-global_cc = 'N/A'.
+              ls_request_input_data-message = TEXT-037.
+            ELSE.
+              ls_request_input_data-message = TEXT-040.
+            ENDIF.
+          ENDIF.
+*        ls_request_input_data-flag = abap_true.
+*        ls_request_input_data-message = TEXT-031.
+        ENDIF.
+        IF  ls_request_input_data-flag IS INITIAL.
+          IF lt_billsh[] IS NOT INITIAL.
+            DELETE FROM /kgo/fi_gf_bllng WHERE bukrs = ls_bill-company_code
+                                         AND rrf_no_gf = ls_bill-rrf_no_gf
+                                         AND requesting_mf = ls_bill-requesting_mf
+                                         AND global_cc = ls_bill-global_cc
+                                         AND process_grp = ls_bill-process_grp
+                                         AND member_firm = ls_bill-member_firm
+                                         AND cc_short_desc = ls_bill-cc_short_desc.
+
+            MODIFY /kgo/fi_gf_bllng FROM TABLE lt_billsh.
+            IF sy-subrc = 0.
+              UPDATE /kgo/fi_gf_rrfl SET: billing_frequency = ls_bill-billing_frequency
+                                          amount = ls_bill-amount
+                                          start_date = ls_bill-start_date
+                                          no_of_occur = ls_bill-no_of_occur
+                   WHERE company_code = ls_bill-company_code
+                                       AND rrf_no_gf = ls_bill-rrf_no_gf
+                                       AND requesting_mf = ls_bill-requesting_mf
+                                       AND global_cc = ls_bill-global_cc
+                                       AND process_grp = ls_bill-process_grp
+                                       AND member_firm = ls_bill-member_firm
+                                       AND cc_short_desc = ls_bill-cc_short_desc.
+              IF sy-subrc = 0.
+                COMMIT WORK AND WAIT.
+                WAIT UP TO 1 SECONDS.
+                IF ls_bill-global_cc = 'N/A'.
+                  ls_request_input_data-message = TEXT-029.
+                ELSE.
+                  ls_request_input_data-message = TEXT-041.
+                ENDIF.
+              ELSE.
+                COMMIT WORK AND WAIT.
+                WAIT UP TO 1 SECONDS.
+                IF ls_bill-global_cc = 'N/A'.
+                  ls_request_input_data-message = TEXT-029.
+                ELSE.
+                  ls_request_input_data-message = TEXT-041.
+                ENDIF.
+              ENDIF.
+              "History Update
+              CALL METHOD /kgo/fi_ar_utility=>history_update
+                EXPORTING
+                  im_rrf           = ls_bill-rrf_no_gf
+                  im_mf            = ls_bill-requesting_mf
+                  im_pgrp          = ls_bill-process_grp
+                  im_cc            = ls_bill-global_cc
+                  im_bukrs         = ls_bill-company_code
+                  im_action        = '024'
+                  im_memberfirm    = ls_bill-member_firm
+                  im_cc_short_desc = ls_bill-cc_short_desc.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+      ELSE.
+        ls_request_input_data-flag = abap_true.
+        IF ls_bill-global_cc = 'N/A'.
+          ls_request_input_data-message = TEXT-047.
+        ELSE.
+          ls_request_input_data-message = TEXT-047.
+        ENDIF.
+      ENDIF.
+    ELSE.
+      ls_request_input_data-flag = abap_true.
+      IF ls_bill-global_cc = 'N/A'.
+        ls_request_input_data-message = TEXT-027.
+      ELSE.
+        ls_request_input_data-message = TEXT-043.
+      ENDIF.
+    ENDIF.
+    "Sending response back
+    er_entity = ls_request_input_data.
+  ENDMETHOD.
+
+
+
+
+odata-get_entityset
+
+  METHOD gf_billingset_get_entityset.
+    DATA:ls_bllng         TYPE /kgo/fi_st_gf_bllng,
+         lt_bllng         TYPE STANDARD TABLE OF /kgo/fi_st_gf_bllng,
+         lv_gf            TYPE /kgo/fi_req_intno,
+         lv_mf            TYPE /kgo/fi_mf_gf,
+         lv_member_firm	  TYPE /kgo/fi_member_firm,
+         lv_cc_short_desc TYPE /kgo/fi_cc_desc,
+         lv_pgrp          TYPE /kgo/fi_process_grp,
+         lv_bukrs         TYPE bukrs,
+         lv_kostl         TYPE kostl.
+    IF it_key_tab[] IS NOT INITIAL.
+      "Reading GF No
+      READ TABLE it_key_tab INTO DATA(ls_key_tab) WITH KEY name = 'RrfNoGf'.
+      IF sy-subrc = 0.
+        lv_gf = ls_key_tab-value.
+      ENDIF.
+
+      "Reading Requesting MF
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'RequestingMf'.
+      IF sy-subrc = 0.
+        lv_mf = ls_key_tab-value.
+      ENDIF.
+
+      "Reading Cost center
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'GlobalCc'.
+      IF sy-subrc = 0.
+        lv_kostl = ls_key_tab-value.
+      ENDIF.
+
+    ELSE."If filter is coming
+      "Reading GF No.
+      READ TABLE it_filter_select_options INTO DATA(ls_filter) WITH KEY property = 'RrfNoGf'.
+      IF sy-subrc = 0.
+        DATA(lt_gf) = ls_filter-select_options[].
+        READ TABLE lt_gf INTO DATA(ls_gf) INDEX 1.
+        IF sy-subrc = 0.
+          lv_gf = ls_gf-low.
+        ENDIF.
+      ENDIF.
+      "Reading Requesting MF.
+      READ TABLE it_filter_select_options INTO ls_filter
+      WITH KEY property = 'RequestingMf'.
+      IF sy-subrc = 0.
+        DATA(lt_mf) = ls_filter-select_options[].
+        READ TABLE lt_mf INTO DATA(ls_mf) INDEX 1.
+        IF sy-subrc = 0.
+          lv_mf = ls_mf-low.
+        ENDIF.
+      ENDIF.
+
+      "Reading Cost Center.
+      READ TABLE it_filter_select_options INTO ls_filter
+      WITH KEY property = 'GlobalCc'.
+      IF sy-subrc = 0.
+        DATA(lt_cc) = ls_filter-select_options[].
+        READ TABLE lt_cc INTO DATA(ls_cc) INDEX 1.
+        IF sy-subrc = 0.
+          lv_kostl = ls_cc-low.
+*          lv_kostl = |{ lv_kostl ALPHA = IN }|.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+            EXPORTING
+              input  = lv_kostl
+            IMPORTING
+              output = lv_kostl.
+        ENDIF.
+      ENDIF.
+
+      "Reading Process Group.
+      READ TABLE it_filter_select_options INTO ls_filter
+      WITH KEY property = 'ProcessGrp'.
+      IF sy-subrc = 0.
+        DATA(lt_pgrp) = ls_filter-select_options[].
+        READ TABLE lt_pgrp INTO DATA(ls_pgrp) INDEX 1.
+        IF sy-subrc = 0.
+          lv_pgrp = ls_pgrp-low.
+        ENDIF.
+      ENDIF.
+
+      "Reading Company Code.
+      READ TABLE it_filter_select_options INTO ls_filter
+      WITH KEY property = 'Bukrs'.
+      IF sy-subrc = 0.
+        DATA(lt_bukrs) = ls_filter-select_options[].
+        READ TABLE lt_bukrs INTO DATA(ls_bukrs) INDEX 1.
+        IF sy-subrc = 0.
+          lv_bukrs = ls_bukrs-low.
+        ENDIF.
+      ENDIF.
+
+      "reading member firm
+      READ TABLE it_filter_select_options WITH KEY property = 'MemberFirm' INTO ls_filter.
+      IF sy-subrc = 0.
+        DATA(lt_member) = ls_filter-select_options[].
+        READ TABLE lt_member INTO DATA(ls_member) INDEX 1.
+        IF sy-subrc = 0.
+          lv_member_firm = ls_member-low.
+        ENDIF.
+      ENDIF.
+
+      "reading cc description
+      READ TABLE it_filter_select_options WITH KEY property = 'CcShortDesc' INTO ls_filter.
+      IF sy-subrc = 0.
+        DATA(lt_ccs) = ls_filter-select_options[].
+        READ TABLE lt_ccs INTO DATA(ls_ccs) INDEX 1.
+        IF sy-subrc = 0.
+          lv_cc_short_desc = ls_ccs-low.
+          IF lv_cc_short_desc = 'null'.
+            CLEAR lv_cc_short_desc.
+          ENDIF.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+    IF lv_mf IS NOT INITIAL.
+      lv_kostl = 'N/A'.
+      "CAST( req_seq AS NUMC( 3 ) ) AS req_seq
+      SELECT FROM /kgo/fi_gf_bllng
+        FIELDS bukrs,rrf_no_gf,requesting_mf,global_cc,process_grp,member_firm,cc_short_desc,
+        req_seq,sch_date,waers,dmbtr,belnr,budat,gjahr
+         WHERE bukrs = @lv_bukrs
+         AND   rrf_no_gf = @lv_gf
+         AND   requesting_mf = @lv_mf
+         AND   global_cc = @lv_kostl
+         AND   process_grp = @lv_pgrp
+         AND   member_firm  = @lv_member_firm
+         AND   cc_short_desc = @lv_cc_short_desc
+         INTO TABLE @DATA(lt_data).
+      IF sy-subrc = 0.
+        LOOP AT lt_data ASSIGNING FIELD-SYMBOL(<ls_data>).
+          <ls_data>-req_seq = |{ <ls_data>-req_seq ALPHA = IN }|.
+        ENDLOOP.
+        SORT lt_data BY bukrs rrf_no_gf req_seq.
+        LOOP AT lt_data ASSIGNING <ls_data>.
+          <ls_data>-req_seq = |{ <ls_data>-req_seq ALPHA = OUT }|.
+        ENDLOOP.
+        MOVE-CORRESPONDING lt_data TO et_entityset.
+      ENDIF.
+    ELSE.
+      lv_mf = 'N/A'.
+      SELECT FROM /kgo/fi_gf_bllng
+        FIELDS bukrs,rrf_no_gf,requesting_mf,global_cc,process_grp,member_firm,cc_short_desc,
+        req_seq,sch_date,waers,dmbtr,belnr,budat,gjahr
+        WHERE bukrs = @lv_bukrs
+         AND   rrf_no_gf = @lv_gf
+         AND   requesting_mf = @lv_mf
+         AND   global_cc = @lv_kostl
+         AND   process_grp = @lv_pgrp
+        AND   member_firm  = @lv_member_firm
+         AND   cc_short_desc = @lv_cc_short_desc
+        INTO TABLE @lt_data.
+      IF sy-subrc = 0.
+        LOOP AT lt_data ASSIGNING <ls_data>.
+          <ls_data>-req_seq = |{ <ls_data>-req_seq ALPHA = IN }|.
+        ENDLOOP.
+        SORT lt_data BY bukrs rrf_no_gf req_seq.
+        LOOP AT lt_data ASSIGNING <ls_data>.
+          <ls_data>-req_seq = |{ <ls_data>-req_seq ALPHA = OUT }|.
+        ENDLOOP.
+        MOVE-CORRESPONDING lt_data TO et_entityset.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+
+
+
+odata:te
+
+DATA: lv_bukrs TYPE bukrs. "Added for new company code '9921' change by MARINAHOTA on 17/08/2020
+
+    IF it_filter_select_options[] IS NOT INITIAL.
+
+*Start of change for addition of new company code '9921' by MARINAHOTA on 17/08/2020
+      "Reading Company Code
+      READ TABLE it_filter_select_options INTO DATA(ls_filter)
+      WITH KEY property = 'Bukrs'.
+      IF sy-subrc = 0.
+        DATA(lt_bukrs) = ls_filter-select_options[].
+        READ TABLE lt_bukrs INTO DATA(ls_bukrs) INDEX 1.
+        IF sy-subrc = 0.
+          lv_bukrs = ls_bukrs-low.
+        ENDIF.
+      ENDIF.
+*End of change for addition of new company code '9921' by MARINAHOTA on 17/08/2020
+
+      "Reading Country
+      READ TABLE it_filter_select_options INTO ls_filter
+       WITH KEY property = 'Land1'.
+      IF sy-subrc = 0.
+        DATA(lt_land1) = ls_filter-select_options[].
+        READ TABLE lt_land1 ASSIGNING FIELD-SYMBOL(<ls_land1>) INDEX 1.
+        IF sy-subrc = 0.
+          TRANSLATE <ls_land1>-low TO UPPER CASE.
+        ENDIF.
+      ENDIF.
+
+      "Reading VAT Tax code
+      READ TABLE it_filter_select_options INTO ls_filter
+       WITH KEY property = 'Stceg'.
+      IF sy-subrc = 0.
+        DATA(lt_stceg) = ls_filter-select_options[].
+        READ TABLE lt_stceg ASSIGNING FIELD-SYMBOL(<ls_stceg>) INDEX 1.
+        IF sy-subrc = 0.
+          TRANSLATE <ls_stceg>-low TO UPPER CASE.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+
+    SELECT bukrs land1 stceg FROM t001n
+    INTO CORRESPONDING FIELDS OF TABLE et_entityset
+    WHERE bukrs = lv_bukrs "'9901' Commented for new company code '9921' change by MARINAHOTA on 17/08/2020
+    AND   land1 IN lt_land1
+    ORDER BY land1.
+
+
+
+
+
+
+
